@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{{ url_for("static",filename="css/login.css") }}">
+</head>
+<body>
+
+<h1 class="center">Smartblinds</h1>
+    <div class="login-page">
+        <div class="form">
+            <form class="register-form">
+                <input type="text" placeholder="name"/>
+                <input type="password" placeholder="password"/>
+                <input type="text" placeholder="email address"/>
+                <button>create</button>
+                <p class="message">Already registered? <a href="#">Sign In</a></p>
+            </form>
+        <form class="login-form" action="" method="post">
+            <p>{% for message in get_flashed_messages() %}
+            {{ message }}
+            {% endfor %}</p>
+            <input type="text" placeholder="Username"   name="username" value="{{ request.form.username }}"/>
+            <input type="password" placeholder="Password" name="password" value="{{ request.form.password }}"/>
+            <!-- <input class="btn btn-default" type="submit" value="login"> -->
+            <button>login</button>
+            <p class="message"><a href="#">Forgot password?</a></p>
+            {% if error %}
+            <p class="error"><strong>Error:</strong>{{ error }}</p>
+            {% endif %}
+        </form>
+
+        </div>
+    </div>
+
+<script>
+    $('.message a').click(function(){
+   $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
+});
+</script>
+
+</body>
+</html>

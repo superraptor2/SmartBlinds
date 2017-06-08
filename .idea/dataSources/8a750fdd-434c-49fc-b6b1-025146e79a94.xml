@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="MySQL - @raspberryPi">
+  <database-model serializer="dbm" rdbms="MYSQL" format-version="4.0">
+    <root id="1"/>
+    <schema id="2" parent="1" name="dbsmartblinds">
+      <Current>1</Current>
+      <Visible>1</Visible>
+    </schema>
+    <schema id="3" parent="1" name="information_schema"/>
+    <schema id="4" parent="1" name="mysql"/>
+    <schema id="5" parent="1" name="performance_schema"/>
+    <table id="6" parent="2" name="tbllog"/>
+    <table id="7" parent="2" name="tblscenes"/>
+    <table id="8" parent="2" name="tblusers"/>
+    <column id="9" parent="6" name="idLog">
+      <Position>1</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="10" parent="6" name="reden">
+      <Position>2</Position>
+      <DataType>varchar(255)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="11" parent="6" name="toestand">
+      <Position>3</Position>
+      <DataType>tinyint(1)|0</DataType>
+    </column>
+    <column id="12" parent="6" name="uur">
+      <Position>4</Position>
+      <DataType>varchar(45)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="13" parent="6" name="datum">
+      <Position>5</Position>
+      <DataType>date|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="14" parent="6" name="tblScenes_idScenes">
+      <Position>6</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="15" parent="6" name="tblScenes_tblUsers_idUser">
+      <Position>7</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="16" parent="6" name="fk_tblLog_tblScenes1_idx">
+      <ColNames>tblScenes_idScenes
+tblScenes_tblUsers_idUser</ColNames>
+    </index>
+    <key id="17" parent="6" name="PRIMARY">
+      <ColNames>idLog
+tblScenes_idScenes
+tblScenes_tblUsers_idUser</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="18" parent="6" name="fk_tblLog_tblScenes1">
+      <ColNames>tblScenes_idScenes
+tblScenes_tblUsers_idUser</ColNames>
+      <RefSchemaName>dbsmartblinds</RefSchemaName>
+      <RefTableName>tblscenes</RefTableName>
+      <RefColNames>idScenes
+tblUsers_idUser</RefColNames>
+      <OnUpdate>no-action</OnUpdate>
+      <OnDelete>no-action</OnDelete>
+    </foreign-key>
+    <column id="19" parent="7" name="idScenes">
+      <Position>1</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="20" parent="7" name="scenename">
+      <Position>2</Position>
+      <DataType>varchar(45)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="21" parent="7" name="devicename">
+      <Position>3</Position>
+      <DataType>varchar(45)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="22" parent="7" name="uurStart">
+      <Position>4</Position>
+      <DataType>time|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="23" parent="7" name="uurStop">
+      <Position>5</Position>
+      <DataType>time|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="24" parent="7" name="dagen">
+      <Position>6</Position>
+      <DataType>varchar(60)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="25" parent="7" name="tblUsers_idUser">
+      <Position>7</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="26" parent="7" name="fk_tblScenes_tblUsers_idx">
+      <ColNames>tblUsers_idUser</ColNames>
+    </index>
+    <key id="27" parent="7" name="PRIMARY">
+      <ColNames>idScenes
+tblUsers_idUser</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="28" parent="7" name="fk_tblScenes_tblUsers">
+      <ColNames>tblUsers_idUser</ColNames>
+      <RefSchemaName>dbsmartblinds</RefSchemaName>
+      <RefTableName>tblusers</RefTableName>
+      <RefColNames>idUser</RefColNames>
+      <OnUpdate>no-action</OnUpdate>
+      <OnDelete>no-action</OnDelete>
+    </foreign-key>
+    <column id="29" parent="8" name="idUser">
+      <Position>1</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="30" parent="8" name="username">
+      <Position>2</Position>
+      <DataType>varchar(45)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="31" parent="8" name="password">
+      <Position>3</Position>
+      <DataType>varchar(45)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="32" parent="8" name="emailaddress">
+      <Position>4</Position>
+      <DataType>varchar(45)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <key id="33" parent="8" name="PRIMARY">
+      <ColNames>idUser</ColNames>
+      <Primary>1</Primary>
+    </key>
+  </database-model>
+</dataSource>

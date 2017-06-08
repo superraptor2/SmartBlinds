@@ -1,0 +1,27 @@
+{% extends "masterpage.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block home %}
+    class="active"
+{% endblock %}
+
+{% block bodywidth %}
+
+{% endblock %}
+
+{% block body %}
+
+    {% for message in get_flashed_messages() %}
+    {{ message }}
+    {% endfor %}
+
+    <div class="bgimg-1">
+        <div class="caption">
+            <span class="border">GET STARTED</span><br>
+            <span class="border">PRESS HERE</span>
+        </div>
+    </div>
+{% endblock %}
