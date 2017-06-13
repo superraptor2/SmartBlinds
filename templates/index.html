@@ -13,15 +13,40 @@
 {% endblock %}
 
 {% block body %}
-
+    <div class="scene_center">
     {% for message in get_flashed_messages() %}
     {{ message }}
     {% endfor %}
+    </div>
 
+    <div id="main">
+        <div class="devices">
+            <div class="devices_group">
+                <figure>
+                    <a href="/devices" ><img src="../static/images/blind.jpg" title="Blind" alt="Blind"/></a>
+                    <figcaption>blind</figcaption>
+                </figure>
+            </div>
+            <div class="devices_group">
+                <figure>
+                    <a href="/devices" ><img src="../static/images/fan.jpg" title="Fan" alt="Fan"/></a>
+                    <figcaption>fan</figcaption>
+                </figure>
+            </div>
+            <div class="devices_group">
+                <figure>
+                    <a href="/devices" ><img src="../static/images/lights-notavailable.jpg" title="Lights - not available" alt="Lights - not available"/></a>
+                    <figcaption>lights - not available</figcaption>
+                </figure>
+            </div>
+        </div>
+    </div>
+
+    <!--
     <div class="bgimg-1">
         <div class="caption">
             <span class="border">GET STARTED</span><br>
             <span class="border">PRESS HERE</span>
         </div>
-    </div>
+    </div> -->
 {% endblock %}

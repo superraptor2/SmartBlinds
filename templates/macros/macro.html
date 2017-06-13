@@ -1,10 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% macro build_figure(naam) %}
+    <figure>
 
-</body>
-</html>
+
+        <img
+                src="{{ url_for("static",filename="images/" + naam + ".jpg") }}"
+                alt=""
+        >
+
+
+{#        <figcaption>#}
+{#            {{ naam }}#}
+{#        </figcaption>#}
+
+
+    </figure>
+{% endmacro %}
+
+{% macro devices(naam) %}
+        <img
+                src="{{ url_for("static",filename="images/" + naam + ".jpg") }}"
+                alt=""
+        >
+{% endmacro %}

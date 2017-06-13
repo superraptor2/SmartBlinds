@@ -9,54 +9,64 @@
     <schema id="3" parent="1" name="information_schema"/>
     <schema id="4" parent="1" name="mysql"/>
     <schema id="5" parent="1" name="performance_schema"/>
-    <table id="6" parent="2" name="tbllog"/>
-    <table id="7" parent="2" name="tblscenes"/>
-    <table id="8" parent="2" name="tblusers"/>
-    <column id="9" parent="6" name="idLog">
+    <table id="6" parent="2" name="tbldevices"/>
+    <table id="7" parent="2" name="tbllog"/>
+    <table id="8" parent="2" name="tblscenes"/>
+    <table id="9" parent="2" name="tblscenes_has_tbldevices"/>
+    <table id="10" parent="2" name="tblusers"/>
+    <column id="11" parent="6" name="idDevice">
       <Position>1</Position>
       <DataType>int(11)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="10" parent="6" name="reden">
+    <column id="12" parent="6" name="devicename">
+      <Position>2</Position>
+      <DataType>varchar(45)|0</DataType>
+    </column>
+    <key id="13" parent="6" name="PRIMARY">
+      <ColNames>idDevice</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="14" parent="7" name="idLog">
+      <Position>1</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="15" parent="7" name="reden">
       <Position>2</Position>
       <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="11" parent="6" name="toestand">
+    <column id="16" parent="7" name="toestand">
       <Position>3</Position>
       <DataType>tinyint(1)|0</DataType>
     </column>
-    <column id="12" parent="6" name="uur">
-      <Position>4</Position>
-      <DataType>varchar(45)|0</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="13" parent="6" name="datum">
+    <column id="17" parent="7" name="tblScenes_idScenes">
       <Position>5</Position>
-      <DataType>date|0</DataType>
+      <DataType>int(11)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="14" parent="6" name="tblScenes_idScenes">
+    <column id="18" parent="7" name="tblScenes_tblUsers_idUser">
       <Position>6</Position>
       <DataType>int(11)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="15" parent="6" name="tblScenes_tblUsers_idUser">
-      <Position>7</Position>
-      <DataType>int(11)|0</DataType>
+    <column id="19" parent="7" name="datumUur">
+      <Position>4</Position>
+      <DataType>datetime|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="16" parent="6" name="fk_tblLog_tblScenes1_idx">
+    <index id="20" parent="7" name="fk_tblLog_tblScenes1_idx">
       <ColNames>tblScenes_idScenes
 tblScenes_tblUsers_idUser</ColNames>
     </index>
-    <key id="17" parent="6" name="PRIMARY">
+    <key id="21" parent="7" name="PRIMARY">
       <ColNames>idLog
 tblScenes_idScenes
 tblScenes_tblUsers_idUser</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="18" parent="6" name="fk_tblLog_tblScenes1">
+    <foreign-key id="22" parent="7" name="fk_tblLog_tblScenes1">
       <ColNames>tblScenes_idScenes
 tblScenes_tblUsers_idUser</ColNames>
       <RefSchemaName>dbsmartblinds</RefSchemaName>
@@ -66,50 +76,50 @@ tblUsers_idUser</RefColNames>
       <OnUpdate>no-action</OnUpdate>
       <OnDelete>no-action</OnDelete>
     </foreign-key>
-    <column id="19" parent="7" name="idScenes">
+    <column id="23" parent="8" name="idScenes">
       <Position>1</Position>
       <DataType>int(11)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="20" parent="7" name="scenename">
+    <column id="24" parent="8" name="scenename">
       <Position>2</Position>
       <DataType>varchar(45)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="21" parent="7" name="devicename">
+    <column id="25" parent="8" name="devicename">
       <Position>3</Position>
       <DataType>varchar(45)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="22" parent="7" name="uurStart">
+    <column id="26" parent="8" name="uurStart">
       <Position>4</Position>
       <DataType>time|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="23" parent="7" name="uurStop">
+    <column id="27" parent="8" name="uurStop">
       <Position>5</Position>
       <DataType>time|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="24" parent="7" name="dagen">
+    <column id="28" parent="8" name="dagen">
       <Position>6</Position>
       <DataType>varchar(60)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="25" parent="7" name="tblUsers_idUser">
+    <column id="29" parent="8" name="tblUsers_idUser">
       <Position>7</Position>
       <DataType>int(11)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="26" parent="7" name="fk_tblScenes_tblUsers_idx">
+    <index id="30" parent="8" name="fk_tblScenes_tblUsers_idx">
       <ColNames>tblUsers_idUser</ColNames>
     </index>
-    <key id="27" parent="7" name="PRIMARY">
+    <key id="31" parent="8" name="PRIMARY">
       <ColNames>idScenes
 tblUsers_idUser</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="28" parent="7" name="fk_tblScenes_tblUsers">
+    <foreign-key id="32" parent="8" name="fk_tblScenes_tblUsers">
       <ColNames>tblUsers_idUser</ColNames>
       <RefSchemaName>dbsmartblinds</RefSchemaName>
       <RefTableName>tblusers</RefTableName>
@@ -117,27 +127,73 @@ tblUsers_idUser</ColNames>
       <OnUpdate>no-action</OnUpdate>
       <OnDelete>no-action</OnDelete>
     </foreign-key>
-    <column id="29" parent="8" name="idUser">
+    <column id="33" parent="9" name="tblscenes_idScenes">
       <Position>1</Position>
       <DataType>int(11)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="30" parent="8" name="username">
+    <column id="34" parent="9" name="tblscenes_tblUsers_idUser">
+      <Position>2</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="35" parent="9" name="tbldevices_idDevice">
+      <Position>3</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="36" parent="9" name="fk_tblscenes_has_tbldevices_tbldevices1_idx">
+      <ColNames>tbldevices_idDevice</ColNames>
+    </index>
+    <index id="37" parent="9" name="fk_tblscenes_has_tbldevices_tblscenes1_idx">
+      <ColNames>tblscenes_idScenes
+tblscenes_tblUsers_idUser</ColNames>
+    </index>
+    <key id="38" parent="9" name="PRIMARY">
+      <ColNames>tblscenes_idScenes
+tblscenes_tblUsers_idUser
+tbldevices_idDevice</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="39" parent="9" name="fk_tblscenes_has_tbldevices_tblscenes1">
+      <ColNames>tblscenes_idScenes
+tblscenes_tblUsers_idUser</ColNames>
+      <RefSchemaName>dbsmartblinds</RefSchemaName>
+      <RefTableName>tblscenes</RefTableName>
+      <RefColNames>idScenes
+tblUsers_idUser</RefColNames>
+      <OnUpdate>no-action</OnUpdate>
+      <OnDelete>no-action</OnDelete>
+    </foreign-key>
+    <foreign-key id="40" parent="9" name="fk_tblscenes_has_tbldevices_tbldevices1">
+      <ColNames>tbldevices_idDevice</ColNames>
+      <RefSchemaName>dbsmartblinds</RefSchemaName>
+      <RefTableName>tbldevices</RefTableName>
+      <RefColNames>idDevice</RefColNames>
+      <OnUpdate>no-action</OnUpdate>
+      <OnDelete>no-action</OnDelete>
+    </foreign-key>
+    <column id="41" parent="10" name="idUser">
+      <Position>1</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="42" parent="10" name="username">
       <Position>2</Position>
       <DataType>varchar(45)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="31" parent="8" name="password">
+    <column id="43" parent="10" name="password">
       <Position>3</Position>
       <DataType>varchar(45)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="32" parent="8" name="emailaddress">
+    <column id="44" parent="10" name="emailaddress">
       <Position>4</Position>
       <DataType>varchar(45)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="33" parent="8" name="PRIMARY">
+    <key id="45" parent="10" name="PRIMARY">
       <ColNames>idUser</ColNames>
       <Primary>1</Primary>
     </key>

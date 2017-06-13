@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Online Winkel - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for("static",filename="css/reset.css") }}">
     <link rel="stylesheet" href="{{ url_for("static",filename="css/stylesheet.css") }}">
 </head>
 
@@ -16,11 +17,11 @@
     <nav>
         <ul>
             <li><a {% block home %}{% endblock %} href="{{ url_for("index") }}">Home</a></li>
-            <li><a {% block login %}{% endblock %} href="{{ url_for("logout")}}">Logout</a></li>
-            <li><a {% block scenes %}{% endblock %} href="{{ url_for("scenes")}}">Scenes</a></li>
+            <li><a {% block devices %}{% endblock %} href="{{ url_for("devices")}}">Devices</a></li>
             <li><a {% block logs %}{% endblock %} href="{{ url_for("logs")}}">Logs</a></li>
             <li><a {% block about %}{% endblock %} href="{{ url_for("about")}}">About</a></li>
             <li><a {% block contact %}{% endblock %} href="{{ url_for("contact")}}">Contact</a></li>
+            <li><a {% block login %}{% endblock %} href="{{ url_for("logout")}}">Logout</a></li>
         </ul>
     </nav>
 
@@ -32,6 +33,7 @@
 
 <section>
     {% block body %}
+
     {% endblock %}
 </section>
 
@@ -50,14 +52,14 @@
 
 				<p class="footer-links">
 					<a {% block home2 %}{% endblock %} href="{{ url_for("index") }}">Home</a>
-                    <a {% block login2 %}{% endblock %} href="{{ url_for("logout")}}">Logout</a>
-                    <a {% block scenes2 %}{% endblock %} href="{{ url_for("scenes")}}">Scenes</a>
+                    <a {% block scenes2 %}{% endblock %} href="{{ url_for("devices")}}">Devices</a>
                     <a {% block logs2 %}{% endblock %} href="{{ url_for("logs")}}">Logs</a>
                     <a {% block about2 %}{% endblock %} href="{{ url_for("about")}}">About</a>
                     <a {% block contact2 %}{% endblock %} href="{{ url_for("contact")}}">Contact</a>
+                    <a {% block login2 %}{% endblock %} href="{{ url_for("logout")}}">Logout</a>
 				</p>
 
-				<p>Clompen Nico 2017</p>
+                <a href="http://student.howest.be/nico.clompen/portfolio/" ><p>Clompen Nico 2017</p></a>
 			</div>
 
 	</footer>

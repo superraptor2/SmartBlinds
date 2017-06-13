@@ -1,0 +1,79 @@
+{% extends "masterpage.html" %}
+
+{% block title %}
+    {{ devicedetail[1] }}
+{% endblock %}
+
+{% block home %}
+    class="active"
+{% endblock %}
+
+{% block body %}
+{% for device in devicedetail %}
+
+    <div class="device_center">
+        <div class="device">
+            <div class="device_image">{{ macro.build_figure(device[1]) }}</div>
+            <h1>Devicenaam: {{ device[1] }}</h1>
+            <h1>Deviceid: {{ device[0] }}</h1>
+        </div>
+
+    {% if device[0]==1 %}
+
+        <form>
+            <div class="scene_form">
+            <div class="scene_center">Scene</div>
+
+            <form>
+                <input class="checkbox" type="checkbox" name="licht" value="licht_aan_uit">
+                <div class="invoer">Als de hoeveelheid licht:<select name="Feller_Minderfel">
+                <option value="feller">feller</option>
+                <option value="minder_fel">minder fel</option></select>is dan:<select name="licht_open_sluiten">
+                <option value="Open">Open</option>
+                <option value="Sluit">Sluit</option>
+                </select>
+                de rolluik.
+                </div>
+
+                <button>updaten</button>
+            </form>
+
+        {% else %}
+
+            <form>
+                <input placeholder="naam" name="naam" required><br>
+                <input class="checkbox" type="checkbox" name="geraden" value="geraden_aan_uit">
+                <div class=" invoer disabled">Als de temperatuur:<select name="Groter_Kleiner">
+                <option value="Groter">Groter</option>
+                <option value="Kleiner">Kleiner</option></select>is dan: <input class="graden" placeholder="" name="Graden" required>°C <select name="graden_groter_kleiner">
+                <option value="Open">draait</option>
+                <option value="Sluit">stopt</option>
+                </select>
+                de ventilator.
+                <br>
+                </div>
+                <button>updaten</button>
+            </form>
+
+        {% endif %}
+
+    </div>
+
+
+    <script>
+    function setColor(btn,color){
+
+        var property=document.getElementById(btn);
+       if (window.getComputedStyle(property).backgroundColor == 'rgb(110, 110, 110)') {
+          property.style.backgroundColor=color;
+       }
+        else {
+          property.style.backgroundColor = "#6e6e6e";
+        }
+      }
+
+    </script>
+
+
+{% endfor %}
+{% endblock %}

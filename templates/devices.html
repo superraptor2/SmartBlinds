@@ -1,0 +1,34 @@
+{% extends "masterpage.html" %}
+
+{% block title %}
+    Scenes
+{% endblock %}
+
+{% block devices %}
+    class="active"
+{% endblock %}
+
+{% block body %}
+    <div id="main">
+        <div class="devices">
+            {% for device in devicelijst %}
+                <div class="devices_group">
+                    <figure>
+                        <a href="{{ url_for("devicedetail",deviceid=device[0])}}">
+                        {{ macro.devices(device[1])}}
+                        </a>
+                        <figcaption>{{ device[1]}}</figcaption>
+                    </figure>
+                </div>
+            {% endfor %}
+
+            <div class="devices_group">
+                <figure>
+                    <a href="/devices" ><img src="../static/images/lights-notavailable.jpg" title="Lights - not available" alt="Lights - not available"/></a>
+                    <figcaption>lights - not available</figcaption>
+                </figure>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

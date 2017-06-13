@@ -2,7 +2,71 @@
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {margin:0; padding:0; border:0; outline:0; font-size:100%; vertical-align:baseline; background:transparent;} body {line-height: 1;}ol, ul{list-style:none;} blockquote, q{quotes:none;} blockquote:before, blockquote:after, q:before, q:after{content:'';content:none;} :focus{outline:0;} ins{text-decoration:none;} del{text-decoration:line-through;} table{border-collapse:collapse; border-spacing:0;}
 
 /*MAIN*/
+
+#main{
+	width: 90%;
+	margin: 0 auto;
+}
+
+.devices{
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.devices_group{
+	width: 30%;
+	margin: 10px;
+}
+
+.devices_group figure{
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.devices_group figure:hover{
+	box-shadow: 2px 2px 3px 2px gray;
+}
+
+.devices_group figure:hover img{
+	transform: scale(1.25);
+}
+
+.devices_group figure figcaption{
+	position: relative;
+    top: -29px;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: inline-block;
+    padding:5px;
+    color:white;
+}
+
+.devices_group figure img{
+	width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: 0.3s ease-in-out;
+}
+
+#blind{
+	float: left;
+	width: 600px;
+	height: 400px;
+	background: url(../images/blind.jpg) no-repeat center;
+	display: block;
+}
+
+#fan{
+	float: left;
+	width: 600px;
+	height: 400px;
+	background: url(../images/fan.jpg) no-repeat center;
+	display: block;
+}
+
 /*Background*/
+
 
 bgimg-1 {
   	background-image: url("../images/background.jpg");
@@ -33,7 +97,6 @@ bgimg-1 {
 
 
 /*=========================*/
-
 body { 
 	font-size: 1.05em;
 	line-height: 1.25em;
@@ -198,7 +261,7 @@ table {
 table tr th {
   padding: 0.5em;
   text-align: left;
-  background-color: #aaa;
+  background-color: #495b74;
   color: #fff;
 }
 
@@ -397,6 +460,90 @@ table tr td {
 	.footer-distributed .footer-left p.footer-links{
 			line-height: 1.8;
 	}
+
+
 }
 
-	
+
+*{
+	margin: 0%;
+}
+
+.devices{
+	margin: 50px 0px 300px 0px;
+}
+
+/*
+
+        html, body{
+            min-height: 100%;
+        }
+
+        .footer-distributed{
+            min-height: 100%;
+            position: fixed;
+        }
+*/
+
+footer{
+	min-height: 150px;
+	position: absolute;
+}
+
+/*Device*/
+
+.device {
+	margin: auto;
+	width: 62%;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.device_image{
+	width: 300px;
+	height: 200px;
+	margin-right: 15px;
+    float: left;
+}
+
+.device_center{
+    /*border: 3px solid green;*/
+}
+
+form{
+  	width:500px;
+	min-height: 300px;
+	margin: auto;
+  	background: #d6d6d6;
+  	border-radius:10px;
+  	margin-bottom:20px;
+  	padding:20px;
+}
+
+.scene_center{
+	text-align: center;
+	font-size: 2em;
+	color: #222222;
+	line-height: 1.15em;
+	margin: 10px 0 ;
+}
+
+html {
+	position: relative;
+	min-height: 100%;
+}
+
+body {
+	margin: 0 0 125px;
+	padding: 25px;
+}
+
+footer {
+	background-color: orange;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	height: 100px;
+	width: 100%;
+}
+/*=========================*/

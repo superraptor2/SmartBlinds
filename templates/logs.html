@@ -11,4 +11,22 @@
 {% block body %}
     <h1>Logs</h1>
 
+    <table class="log" align="center">
+            <tr  class="log">
+                <th><strong>Toestand</strong></th>
+                <th><strong>Datum en uur</strong></th>
+                <th><strong>Reden</strong></th>
+            </tr>
+            {% for log in list_logs %}
+            <tr>
+
+                <td>{% if log[1] == 1 %} activated {% else %} deactivated {% endif %}</td>
+                <td>{{ log[2] }}</td>
+                <td>{{ log[0] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+
 {% endblock %}
