@@ -41,6 +41,13 @@ class DbClass:
         self.__cursor.close()
         return result
 
+    def getLicht(self):
+        query = "SELECT scenename FROM dbsmartblinds.tblscenes WHERE idScenes = '1'"
+        self.__cursor.execute(query)
+        result = self.__cursor.fetchone()
+        self.__cursor.close()
+        return result
+
     def getDataFromDatabase(self):
         # Query zonder parameters
         sqlQuery = "SELECT * FROM tablename"

@@ -4,6 +4,21 @@ from flask import render_template, redirect, url_for, request, session, flash, g
 from functools import wraps
 from DbClass import DbClass
 
+#====Stepper and light sensor===
+#forlightsensor
+import spidev
+
+import RPi.GPIO as GPIO
+import time
+
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD)
+
+ControlPin = [7,11,13,15]
+
+#=================
+
 #create the application object
 app = Flask(__name__)
 
@@ -72,11 +87,126 @@ def devices():
     devicelijst = db.getDevices()
     return render_template('devices.html', devicelijst=devicelijst)
 
-@app.route('/devicedetail/<deviceid>')
+@app.route('/devicedetail/<deviceid>', methods=['GET', 'POST'])
 @login_required
 def devicedetail(deviceid):
     db = DbClass()
     devicedetail = db.getDevice(deviceid)
+    switch = 0
+    if request.method == 'POST':
+        button = request.form['button']
+        if button == 'Open':
+            for pin in ControlPin:
+                GPIO.setup(pin, GPIO.OUT)
+                GPIO.output(pin, 0)
+
+            seq = [[1, 0, 0, 0],
+                   [1, 1, 0, 0],
+                   [0, 1, 0, 0],
+                   [0, 1, 1, 0],
+                   [0, 0, 1, 0],
+                   [0, 0, 1, 1],
+                   [0, 0, 0, 1],
+                   [1, 0, 0, 1]]
+
+            for i in range(512):
+                ### GO THROUGH THE SEQUENCE ONCE ###
+                for halfstep in range(8):
+                    ### GO THROUGH EACH HALF-STEP ###
+                    for pin in range(4):
+                        ### SET EACH PIN ###
+                        GPIO.output(ControlPin[pin], seq[halfstep][pin])
+                    time.sleep(0.001)
+        elif button == 'Close':
+            for pin in ControlPin:
+                GPIO.setup(pin, GPIO.OUT)
+                GPIO.output(pin, 0)
+
+            seq = [[0, 0, 0, 1],
+                   [0, 0, 1, 1],
+                   [0, 0, 1, 0],
+                   [0, 1, 1, 0],
+                   [0, 1, 0, 0],
+                   [1, 1, 0, 0],
+                   [1, 0, 0, 0],
+                   [1, 0, 0, 1]]
+
+            for i in range(512):
+                ### GO THROUGH THE SEQUENCE ONCE ###
+                for halfstep in range(8):
+                    ### GO THROUGH EACH HALF-STEP ###
+                    for pin in range(4):
+                        ### SET EACH PIN ###
+                        GPIO.output(ControlPin[pin], seq[halfstep][pin])
+                    time.sleep(0.001)
+        if button == 'Geen licht-open gordijn':
+            # Define Variables
+            delay = 0.5
+            ldr_channel = 0
+
+            # Create SPI
+            spi = spidev.SpiDev()
+            spi.open(0, 0)
+
+            def readadc(adcnum):
+                # read SPI data from the MCP3008, 8 channels in total
+                if adcnum > 7 or adcnum < 0:
+                    return -1
+                r = spi.xfer2([1, 8 + adcnum << 4, 0])
+                data = ((r[1] & 3) << 8) + r[2]
+                return data
+
+            while True:
+                ldr_value = readadc(ldr_channel)
+                print(ldr_value)
+                time.sleep(delay)
+
+                if ldr_value > 800 and switch ==0:
+                    switch=1
+                    for pin in ControlPin:
+                        GPIO.setup(pin, GPIO.OUT)
+                        GPIO.output(pin, 0)
+                    seq = [[1, 0, 0, 0],
+                           [1, 1, 0, 0],
+                           [0, 1, 0, 0],
+                           [0, 1, 1, 0],
+                           [0, 0, 1, 0],
+                           [0, 0, 1, 1],
+                           [0, 0, 0, 1],
+                           [1, 0, 0, 1]]
+                    for i in range(512):
+                        ### GO THROUGH THE SEQUENCE ONCE ###
+                        for halfstep in range(8):
+                            ### GO THROUGH EACH HALF-STEP ###
+                            for pin in range(4):
+                                ### SET EACH PIN ###
+                                GPIO.output(ControlPin[pin], seq[halfstep][pin])
+                            time.sleep(0.001)
+
+                elif ldr_value < 800 and switch ==1:
+                    switch = 0
+                    for pin in ControlPin:
+                        GPIO.setup(pin, GPIO.OUT)
+                        GPIO.output(pin, 0)
+
+                    seq = [[0, 0, 0, 1],
+                           [0, 0, 1, 1],
+                           [0, 0, 1, 0],
+                           [0, 1, 1, 0],
+                           [0, 1, 0, 0],
+                           [1, 1, 0, 0],
+                           [1, 0, 0, 0],
+                           [1, 0, 0, 1]]
+
+                    for i in range(512):
+                        ### GO THROUGH THE SEQUENCE ONCE ###
+                        for halfstep in range(8):
+                            ### GO THROUGH EACH HALF-STEP ###
+                            for pin in range(4):
+                                ### SET EACH PIN ###
+                                GPIO.output(ControlPin[pin], seq[halfstep][pin])
+                            time.sleep(0.001)
+
     return render_template('devicedetail.html' , devicedetail=devicedetail)
 
 @app.route('/logs')
@@ -99,3 +229,35 @@ def contact():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT",5000))
     app.run(host='0.0.0.0', port=5000, debug=True)
+
+# def checkLight():
+#     db = DbClass
+#     if db.getLicht() == 'Wakeup':
+#         for pin in ControlPin:
+#             GPIO.setup(pin, GPIO.OUT)
+#             GPIO.output(pin, 0)
+#
+#         seq = [[1, 0, 0, 0],
+#                [1, 1, 0, 0],
+#                [0, 1, 0, 0],
+#                [0, 1, 1, 0],
+#                [0, 0, 1, 0],
+#                [0, 0, 1, 1],
+#                [0, 0, 0, 1],
+#                [1, 0, 0, 1]]
+#
+#         for i in range(512):
+#             ### GO THROUGH THE SEQUENCE ONCE ###
+#             for halfstep in range(8):
+#                 ### GO THROUGH EACH HALF-STEP ###
+#                 for pin in range(4):
+#                     ### SET EACH PIN ###
+#                     GPIO.output(ControlPin[pin], seq[halfstep][pin])
+#                 time.sleep(0.001)
+#         GPIO.cleanup()
+
+
+
+#===Steppermotor=========================
+
+

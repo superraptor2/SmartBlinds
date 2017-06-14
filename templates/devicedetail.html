@@ -20,27 +20,38 @@
 
     {% if device[0]==1 %}
 
-        <form>
+        <form method="post">
             <div class="scene_form">
             <div class="scene_center">Scene</div>
 
-            <form>
+            <form method="post">
                 <input class="checkbox" type="checkbox" name="licht" value="licht_aan_uit">
-                <div class="invoer">Als de hoeveelheid licht:<select name="Feller_Minderfel">
-                <option value="feller">feller</option>
-                <option value="minder_fel">minder fel</option></select>is dan:<select name="licht_open_sluiten">
-                <option value="Open">Open</option>
-                <option value="Sluit">Sluit</option>
+                    <div class="invoer">Als de hoeveelheid licht:<select name="Feller_Minderfel">
+                    <option value="feller">feller</option>
+                    <option value="minder_fel">minder fel</option></select>is dan:<select name="licht_open_sluiten">
+                    <option value="Open">Open</option>
+                    <option value="Sluit">Sluit</option>
+                    <option value="Geen licht-open gordijn">Geen licht-open gordijn</option>
+                    <option value="Wel licht-open gordijn">Wel licht-open gordijn</option>
+                    <option value="Geen licht-sluit gordijn">Geen licht-sluit gordijn</option>
+                    <option value="Wel licht-sluit gordijn">Wel licht-sluit gordijn</option>
                 </select>
                 de rolluik.
                 </div>
+
+                <input type="submit" value="Open" name="button">
+                <input type="submit" value="Close" name="button">
+                <input type="submit" value="Geen licht-open gordijn" name="button">
+                <input type="submit" value="Wel licht-open gordijn" name="button">
+                <input type="submit" value="Geen licht-sluit gordijn" name="button">
+                <input type="submit" value="Wel licht-sluit gordijn" name="button">
 
                 <button>updaten</button>
             </form>
 
         {% else %}
 
-            <form>
+            <form method="post">
                 <input placeholder="naam" name="naam" required><br>
                 <input class="checkbox" type="checkbox" name="geraden" value="geraden_aan_uit">
                 <div class=" invoer disabled">Als de temperatuur:<select name="Groter_Kleiner">
