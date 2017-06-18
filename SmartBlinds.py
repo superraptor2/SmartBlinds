@@ -1,11 +1,13 @@
 import datetime
 import threading
+from threading import Thread
 
 from flask import Flask
 import os
 from flask import render_template, redirect, url_for, request, session, flash, g
 from functools import wraps
 from DbClass import DbClass
+import sys, os
 
 #====Stepper and light sensor===
 #forlightsensor
@@ -89,14 +91,11 @@ class ThreadingExample(object):
                 # ===TOESTANDBLIND====
                 def toestandBlind():
                     db = DbClass()
+                    print("toestand van fan checken:")
                     toestandBlind = db.getToestandblind()
                     if toestandBlind[0] == 1:
-                        datum = datetime.datetime.now()
-                        uur = datetime.datetime.now()
-                        reden = "Blind manually opened by the user."
+                        print("Blind gaat open")
 
-                        db = DbClass()
-                        db.setDataToLog(reden, datum, uur)
 
                         for pin in ControlPin:
                             GPIO.setup(pin, GPIO.OUT)
@@ -120,11 +119,7 @@ class ThreadingExample(object):
                                     GPIO.output(ControlPin[pin], seq[halfstep][pin])
                                 time.sleep(0.001)
                     elif toestandBlind[0] == 0:
-                        datum = datetime.datetime.now()
-                        uur = datetime.datetime.now()
-                        reden = "Blind manually closed by the user."
-                        db = DbClass()
-                        db.setDataToLog(reden, datum, uur)
+                        print("Blind gaat toe")
 
                         for pin in ControlPin:
                             GPIO.setup(pin, GPIO.OUT)
@@ -148,11 +143,10 @@ class ThreadingExample(object):
                                     GPIO.output(ControlPin[pin], seq[halfstep][pin])
                                 time.sleep(0.001)
 
-
                 # ===TOESTANDFAN=======
                 def toestandFan():
                     db = DbClass()
-                    print("toestand van fan checken")
+                    print("toestand van fan checken:")
                     toestandFan = db.getToestandfan()
                     if toestandFan[0] == 1:
                         print("Fan staat aan")
@@ -165,43 +159,10 @@ class ThreadingExample(object):
                         db.setDataToLog(reden, datum, uur)
 
                         # ===Start fan=========
-                        import RPi.GPIO as GPIO
-                        import time
-                        GPIO.setwarnings(False)
-
-                        GPIO.setmode(GPIO.BOARD)
-
-                        GPIO.setup(37, GPIO.OUT)
-
-                        p = GPIO.PWM(37, 0.8)
-
-                        p.start(0)
-
-                        try:
-                            while True:
-                                print("loop")
-                                for i in range(100):
-                                    p.ChangeDutyCycle(i)
-                                    time.sleep(0.02)
-                                for i in range(100):
-                                    p.ChangeDutyCycle(100 - i)
-                                    time.sleep(0.02)
-
-                        except KeyboardInterrupt:
-                            pass
-
-                        p.stop()
-
-                        GPIO.cleanup()
+                        t1=Thread(target=openfan)
+                        t1.start()
                     elif toestandFan[0] == 0:
                         print("Fan staat uit")
-                        # ===Data weschrijven==
-                        datum = datetime.datetime.now()
-                        uur = datetime.datetime.now()
-                        reden = "Fan manually stopped by the user."
-
-                        db = DbClass()
-                        db.setDataToLog(reden, datum, uur)
 
                         # ===Stop fan=========
                         import RPi.GPIO as GPIO
@@ -237,9 +198,42 @@ class ThreadingExample(object):
 
             time.sleep(self.interval)
 
+def openfan():
+    import RPi.GPIO as GPIO
+    import time
+    GPIO.setwarnings(False)
+
+    GPIO.setmode(GPIO.BOARD)
+
+    GPIO.setup(37, GPIO.OUT)
+
+    p = GPIO.PWM(37, 0.8)
+
+    p.start(0)
+
+    try:
+        while True:
+            print("loop")
+            for i in range(100):
+                p.ChangeDutyCycle(i)
+                time.sleep(0.02)
+            for i in range(100):
+                p.ChangeDutyCycle(100 - i)
+                time.sleep(0.02)
+
+    except KeyboardInterrupt:
+        pass
+
+    p.stop()
+
+    GPIO.cleanup()
 
 app = Flask(__name__)
 ThreadingExample()
+
+temp = 0
+
+print(temp)
 
 def open_blinds(reden):
     datum = datetime.datetime.now()
@@ -438,16 +432,47 @@ def index():
         # 1 gesloten 0 is open
         if button == "Open" and toestandblind[0] == 0:
             db.updateToestandBlind(1)
+            datum = datetime.datetime.now()
+            uur = datetime.datetime.now()
+            reden = "Blind manually opened by the user."
+
+            db = DbClass()
+            db.setDataToLog(reden, datum, uur)
+
+            return redirect(url_for('index'))
 
         if button == "Close" and toestandblind[0] == 1:
             db.updateToestandBlind(0)
 
+            datum = datetime.datetime.now()
+            uur = datetime.datetime.now()
+            reden = "Blind manually closed by the user."
+            db = DbClass()
+            db.setDataToLog(reden, datum, uur)
+            return redirect(url_for('index'))
+
         # 1 gesloten 0 is open
         if button == "Start" and toestandfan[0] == 0:
             db.updateToestandFan(1)
+            # ===Data weschrijven==
+            datum = datetime.datetime.now()
+            uur = datetime.datetime.now()
+            reden = "Fan manually started by the user."
+
+            db = DbClass()
+            db.setDataToLog(reden, datum, uur)
+            return redirect(url_for('index'))
 
         if button == "Stop" and toestandfan[0] == 1:
             db.updateToestandFan(0)
+            # ===Data weschrijven==
+            datum = datetime.datetime.now()
+            uur = datetime.datetime.now()
+            reden = "Fan manually stopped by the user."
+
+            db = DbClass()
+            db.setDataToLog(reden, datum, uur)
+            return redirect(url_for('index'))
 
 
         # ventilator = 1
@@ -692,8 +717,8 @@ def devicedetail(deviceid):
         #
         #
         # if button == 'Kouder dan'
-
-
+        if button == 'updaten':
+            temp = request.form['temperatuur']
     return render_template('devicedetail.html', devicedetail=devicedetail)
 
 @app.route('/logs')
@@ -759,3 +784,4 @@ if __name__ == '__main__':
 #===Steppermotor=========================
 
 
+print(temp)

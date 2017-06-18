@@ -14,39 +14,37 @@
     <div class="device_center">
         <div class="device">
             <div class="device_image">{{ macro.build_figure(device[1]) }}</div>
-            <h1>Devicenaam: {{ device[1] }}</h1>
-            <h2>Deviceid: {{ device[0] }}</h2>
+            <h1>Devicename: {{ device[1] }}</h1>
+            <h1>Deviceid: {{ device[0] }}</h1>
         </div>
 
     {% if device[0]==1 %}
         <form class="container" method="post">
-            <div class="scene_form">
             <div class="scene_center">Scene</div>
-
+            <br>
             <form method="post" class="scene">
-                <input class="checkbox" type="checkbox" name="licht" value="licht_aan_uit">
-                    <div class="invoer">Als de hoeveelheid licht:<select name="Feller_Minderfel">
-                    <option value="feller">feller</option>
-                    <option value="minder_fel">minder fel</option></select>is dan:<select name="licht_open_sluiten">
-                    <option value="Open">Open</option>
-                    <option value="Sluit">Sluit</option>
-                    <option value="Geen licht-open gordijn">Geen licht-open gordijn</option>
-                    <option value="Wel licht-open gordijn">Wel licht-open gordijn</option>
-                    <option value="Geen licht-sluit gordijn">Geen licht-sluit gordijn</option>
-                    <option value="Wel licht-sluit gordijn">Wel licht-sluit gordijn</option>
-                </select>
-                de rolluik.
-                </div>
-                <input class="knop" type="submit" value="Geen licht-open gordijn anders sluit de gordijn" name="button">
-                <input class="knop" type="submit" value="Wel licht-open gordijn anders sluit de gordijn" name="button">
-                <input type="submit" value="Geen licht-sluit gordijn" name="button">
-                <input type="submit" value="Wel licht-sluit gordijn" name="button">
-                <button>updaten</button>
+                <div class="invoer">Als de sensor:
+                <input class="keuze" type="submit" value="Geen licht" name="button">
+                 of <input class="keuze" type="submit" value="Wel licht" name="button">
+                detecteert dan opent de rolluik, anders sluit de rolluik.
+                </div> <br>
+                <input class="knop" type="submit" value="updaten" name="button">
             </form>
 
     {% elif device[0]==2 %}
 
             <form class="container" method="post">
+                <div class="scene_center">Scene</div>
+                <br>
+                <div class="invoer">Als de kamertemperatuur:
+                <input class="keuze" type="submit" value="Groter dan" name="button">
+                 of <input class="keuze" type="submit" value="Kleiner dan" name="button">
+                <input class="input" placeholder="15 °c" name="temperatuur"> is dan opent de rolluik, anders sluit de rolluik.
+                </div> <br>
+                <input class="knop" type="submit" value="updaten" name="button">
+
+                <br>
+
                 <input placeholder="naam" name="naam" required><br>
                 <input class="checkbox" type="checkbox" name="geraden" value="geraden_aan_uit">
                 <div class=" invoer disabled">Als de temperatuur:
@@ -61,6 +59,7 @@
                 <input class="knop" type="submit" value="Warmer dan" name="button">
                 <input class="knop" type="submit" value="Kouder dan" name="button">
                 <input class="knop" type="submit" value="Updaten" name="button">
+
             </form>
 
     {% endif %}
