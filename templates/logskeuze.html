@@ -1,0 +1,75 @@
+{% extends "masterpage.html" %}
+
+{% block title %}
+    {{ logskeuze[0] }}
+{% endblock %}
+
+{% block logs %}
+    class="active"
+{% endblock %}
+
+{% block body %}
+
+{% for logs in logskeuze %}
+
+    {% if logs[0]==1 %}
+
+        <h1>Manual</h1>
+
+        <table class="log" align="center">
+            <tr  class="log">
+                <th><strong>Uur</strong></th>
+                <th><strong>Datum</strong></th>
+                <th><strong>Reden</strong></th>
+            </tr>
+            {% for log in logmanual %}
+            <tr>
+                <td>{{ log[2] }}</td>
+                <td>{{ log[1] }}</td>
+                <td>{{ log[0] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    {% elif logs[0]==2 %}
+
+        <h1>Automatic</h1>
+
+        <table class="log" align="center">
+            <tr  class="log">
+                <th><strong>Uur</strong></th>
+                <th><strong>Datum</strong></th>
+                <th><strong>Reden</strong></th>
+            </tr>
+            {% for log in logauto %}
+            <tr>
+                <td>{{ log[2] }}</td>
+                <td>{{ log[1] }}</td>
+                <td>{{ log[0] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    {% elif logs[0]==3 %}
+
+        <h1>All</h1>
+
+        <table class="log" align="center">
+            <tr  class="log">
+                <th><strong>Uur</strong></th>
+                <th><strong>Datum</strong></th>
+                <th><strong>Reden</strong></th>
+            </tr>
+            {% for log in logall %}
+            <tr>
+                <td>{{ log[2] }}</td>
+                <td>{{ log[1] }}</td>
+                <td>{{ log[0] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    {% endif %}
+
+{% endfor %}
+{% endblock %}

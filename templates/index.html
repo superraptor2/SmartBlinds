@@ -33,20 +33,46 @@
                     <figcaption>fan</figcaption>
                 </figure>
             </div>
-            <div class="devices_group">
-                <figure>
-                    <a href="/devices" ><img src="../static/images/lights-notavailable.jpg" title="Lights - not available" alt="Lights - not available"/></a>
-                    <figcaption>lights - not available</figcaption>
-                </figure>
+
+            <div class="buttons_group">
+                <form method="post">
+                    <input class="knop" type="submit" value="Open" name="button"> {# {% if toestandblind[0] ==1 %} style="background-color: #cccccc" {% endif %} #}
+                    <input class="knop" type="submit" value="Close" name="button"> {# {% if toestandblind[0] ==0 %} style="background-color: #cccccc" {% endif %} #}
+                    state of blind: {% if toestandblind[0] == 1 %} open {% elif toestandblind[0] == 0 %} closed {% endif %}
+{#                    <label class="switch">#}
+{#                        <input class="knop" type="checkbox" value="Start" name="button">#}
+{#                        <div class="slider round"></div>#}
+{#                    </label>#}
+                </form>
             </div>
+            <div class="buttons_group">
+                <form method="post">
+                    <input class="knop" type="submit" value="Start" name="button">
+                    <input class="knop" type="submit" value="Stop" name="button">
+                    state of fan: {% if toestandfan[0] == 1 %} on {% elif toestandfan[0] == 0 %} off {% endif %}
+                </form>
+            </div>
+{#            <div class="devices_group">#}
+{#                <figure>#}
+{#                    <a href="/devices" ><img src="../static/images/lights-notavailable.jpg" title="Lights - not available" alt="Lights - not available"/></a>#}
+{#                    <figcaption>lights - not available</figcaption>#}
+{#                </figure>#}
+{#            </div>#}
         </div>
     </div>
 
-    <!--
-    <div class="bgimg-1">
-        <div class="caption">
-            <span class="border">GET STARTED</span><br>
-            <span class="border">PRESS HERE</span>
-        </div>
-    </div> -->
+    <script>
+
+    $('input[type="submit"] [name="button"]').mouseenter(function() {
+        if ($(this).is(':checked')) {
+            print("2")
+            //$(this).prop('checked',false);
+            alert("is checked");
+        } else {
+             //$(this).prop('checked',true);
+            alert("not checked");
+        }
+    });​
+
+    </script>
 {% endblock %}

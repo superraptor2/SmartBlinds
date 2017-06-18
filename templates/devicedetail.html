@@ -4,7 +4,7 @@
     {{ devicedetail[1] }}
 {% endblock %}
 
-{% block home %}
+{% block devices %}
     class="active"
 {% endblock %}
 
@@ -15,16 +15,15 @@
         <div class="device">
             <div class="device_image">{{ macro.build_figure(device[1]) }}</div>
             <h1>Devicenaam: {{ device[1] }}</h1>
-            <h1>Deviceid: {{ device[0] }}</h1>
+            <h2>Deviceid: {{ device[0] }}</h2>
         </div>
 
     {% if device[0]==1 %}
-
-        <form method="post">
+        <form class="container" method="post">
             <div class="scene_form">
             <div class="scene_center">Scene</div>
 
-            <form method="post">
+            <form method="post" class="scene">
                 <input class="checkbox" type="checkbox" name="licht" value="licht_aan_uit">
                     <div class="invoer">Als de hoeveelheid licht:<select name="Feller_Minderfel">
                     <option value="feller">feller</option>
@@ -38,35 +37,33 @@
                 </select>
                 de rolluik.
                 </div>
-
-                <input type="submit" value="Open" name="button">
-                <input type="submit" value="Close" name="button">
-                <input type="submit" value="Geen licht-open gordijn" name="button">
-                <input type="submit" value="Wel licht-open gordijn" name="button">
+                <input class="knop" type="submit" value="Geen licht-open gordijn anders sluit de gordijn" name="button">
+                <input class="knop" type="submit" value="Wel licht-open gordijn anders sluit de gordijn" name="button">
                 <input type="submit" value="Geen licht-sluit gordijn" name="button">
                 <input type="submit" value="Wel licht-sluit gordijn" name="button">
-
                 <button>updaten</button>
             </form>
 
-        {% else %}
+    {% elif device[0]==2 %}
 
-            <form method="post">
+            <form class="container" method="post">
                 <input placeholder="naam" name="naam" required><br>
                 <input class="checkbox" type="checkbox" name="geraden" value="geraden_aan_uit">
-                <div class=" invoer disabled">Als de temperatuur:<select name="Groter_Kleiner">
+                <div class=" invoer disabled">Als de temperatuur:
+                <select name="Groter_Kleiner">
                 <option value="Groter">Groter</option>
                 <option value="Kleiner">Kleiner</option></select>is dan: <input class="graden" placeholder="" name="Graden" required>°C <select name="graden_groter_kleiner">
                 <option value="Open">draait</option>
                 <option value="Sluit">stopt</option>
                 </select>
                 de ventilator.
-                <br>
                 </div>
-                <button>updaten</button>
+                <input class="knop" type="submit" value="Warmer dan" name="button">
+                <input class="knop" type="submit" value="Kouder dan" name="button">
+                <input class="knop" type="submit" value="Updaten" name="button">
             </form>
 
-        {% endif %}
+    {% endif %}
 
     </div>
 

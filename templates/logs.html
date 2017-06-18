@@ -9,24 +9,28 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Logs</h1>
+    <div class="body"><h1>Logs</h1></div>
 
-    <table class="log" align="center">
-            <tr  class="log">
-                <th><strong>Toestand</strong></th>
-                <th><strong>Datum en uur</strong></th>
-                <th><strong>Reden</strong></th>
-            </tr>
-            {% for log in list_logs %}
-            <tr>
-
-                <td>{% if log[1] == 1 %} activated {% else %} deactivated {% endif %}</td>
-                <td>{{ log[2] }}</td>
-                <td>{{ log[0] }}</td>
-            </tr>
+    <div id="main">
+        <div class="logs">
+            {% for logs in logskeuze %}
+                <div class="logs_group">
+                    <figure>
+                        <a href="{{ url_for("logskeuze",idchoice=logs[0])}}">
+                        {{ macro.logs(logs[1])}}
+                        </a>
+                        <figcaption>{{ logs[1]}}</figcaption>
+                    </figure>
+                </div>
             {% endfor %}
-        </table>
-
+        </div>
     </div>
+
+
+
+{#                <td>{% if log[0] == 1 %} activated {% else %} deactivated {% endif %}</td>#}
+{#                <td>{{ log[1] }}</td>#}
+{#                <td>{{ log[2] }}</td>#}
+
 
 {% endblock %}

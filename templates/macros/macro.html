@@ -22,3 +22,10 @@
                 alt=""
         >
 {% endmacro %}
+
+{% macro logs(naam) %}
+    <img
+        src="{{ url_for("static", filename="images/" + naam + ".jpg") }}"
+        alt=""
+    >
+{% endmacro %}
