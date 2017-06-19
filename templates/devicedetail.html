@@ -23,12 +23,13 @@
             <div class="scene_center">Scene</div>
             <br>
             <form method="post" class="scene">
-                <div class="invoer">Als de sensor:
-                <input class="keuze" type="submit" value="Geen licht" name="button">
-                 of <input class="keuze" type="submit" value="Wel licht" name="button">
-                detecteert dan opent de rolluik, anders sluit de rolluik.
+                <div class="invoer">If the sensor detects:
+                <input class="keuze" type="submit" value="light" name="button">
+                 or <input class="keuze" type="submit" value="no light" name="button">
+                then the blind will open itself, otherwise it will close itself.
                 </div> <br>
-                <input class="knop" type="submit" value="updaten" name="button">
+                <input class="knop" type="submit" value="update blindscene" name="button">
+                <input class="knop" type="submit" value="turn off blindscene" name="button">
             </form>
 
     {% elif device[0]==2 %}
@@ -36,25 +37,25 @@
             <form class="container" method="post">
                 <div class="scene_center">Scene</div>
                 <br>
-                <div class="invoer">Als de kamertemperatuur:
-                <input class="keuze" type="submit" value="Groter dan" name="button">
-                 of <input class="keuze" type="submit" value="Kleiner dan" name="button">
-                <input class="input" placeholder="15 °c" name="temperatuur"> is dan opent de rolluik, anders sluit de rolluik.
-                </div> <br>
-                <input class="knop" type="submit" value="updaten" name="button">
-
+                <div class="invoer">If the roomtemperature is:
+                <input class="keuze" type="submit" value="warmer" name="button">
+                 or <input class="keuze" type="submit" value="cooler" name="button"> then
+                <input class="input" placeholder="15 °c" name="temperatuur"> then the fan will automatically turn or, otherwise it will turn off itself.
+                </div>
                 <br>
-
-                <input placeholder="naam" name="naam" required><br>
-                <input class="checkbox" type="checkbox" name="geraden" value="geraden_aan_uit">
-                <div class=" invoer disabled">Als de temperatuur:
-                <select name="Groter_Kleiner">
-                <option value="Groter">Groter</option>
-                <option value="Kleiner">Kleiner</option></select>is dan: <input class="graden" placeholder="" name="Graden" required>°C <select name="graden_groter_kleiner">
-                <option value="Open">draait</option>
-                <option value="Sluit">stopt</option>
-                </select>
-                de ventilator.
+                <input class="knop" type="submit" value="update fanscene" name="button">
+                <input class="knop" type="submit" value="turn off fanscene" name="button">
+{#                <br>#}
+{#                <input placeholder="naam" name="naam" required><br>#}
+{#                <input class="checkbox" type="checkbox" name="geraden" value="geraden_aan_uit">#}
+{#                <div class=" invoer disabled">Als de temperatuur:#}
+{#                <select name="Groter_Kleiner">#}
+{#                <option value="Groter">Groter</option>#}
+{#                <option value="Kleiner">Kleiner</option></select>is dan: <input class="graden" placeholder="" name="Graden" required>°C <select name="graden_groter_kleiner">#}
+{#                <option value="Open">draait</option>#}
+{#                <option value="Sluit">stopt</option>#}
+{#                </select>#}
+{#                de ventilator.#}
                 </div>
                 <input class="knop" type="submit" value="Warmer dan" name="button">
                 <input class="knop" type="submit" value="Kouder dan" name="button">

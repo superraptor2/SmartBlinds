@@ -28,6 +28,11 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
     margin-bottom: 10px;
 }
 
+.keuze:hover{
+    background-color: #444; /* Green */
+    color: white;
+}
+
 .knop {
     background-color: #7e7672; /* blue */
     border: none;

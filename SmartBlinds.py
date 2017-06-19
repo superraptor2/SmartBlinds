@@ -58,120 +58,36 @@ class ThreadingExample(object):
             # Do something
 
             print("Start")
-            # Function to read SPI data from MCP3008 chip
-            # Channel must be an integer 0-7
-            def ReadChannel(channel):
-                adc = spi.xfer2([1, (8 + channel) << 4, 0])
-                data = ((adc[1] & 3) << 8) + adc[2]
-                return data
 
-            # Function to convert data to voltage level,
-            # rounded to specified number of decimal places.
-            def ConvertVolts(data, places):
-                volts = (data * 3.3) / float(1023)
-                volts = round(volts, places)
-                return volts
-
-            # Function to calculate temperature from
-            # TMP36 data, rounded to specified
-            # number of decimal places.
-            def ConvertTemp(data, places):
-                temp = data * 100
-                return temp
-
-            # Define sensor channels
-            light_channel = 0
-            temp_channel = 1
-
-            # Define delay between readings
-            delay = 2
 
             while True:
-                print("Toestanden checken:")
-                # ===TOESTANDBLIND====
-                def toestandBlind():
-                    db = DbClass()
-                    print("toestand van fan checken:")
-                    toestandBlind = db.getToestandblind()
-                    if toestandBlind[0] == 1:
-                        print("Blind gaat open")
+                # Function to read SPI data from MCP3008 chip
+                # Channel must be an integer 0-7
+                def ReadChannel(channel):
+                    adc = spi.xfer2([1, (8 + channel) << 4, 0])
+                    data = ((adc[1] & 3) << 8) + adc[2]
+                    return data
 
+                # Function to convert data to voltage level,
+                # rounded to specified number of decimal places.
+                def ConvertVolts(data, places):
+                    volts = (data * 3.3) / float(1023)
+                    volts = round(volts, places)
+                    return volts
 
-                        for pin in ControlPin:
-                            GPIO.setup(pin, GPIO.OUT)
-                            GPIO.output(pin, 0)
+                # Function to calculate temperature from
+                # TMP36 data, rounded to specified
+                # number of decimal places.
+                def ConvertTemp(data, places):
+                    temp = data * 100
+                    return temp
 
-                        seq = [[0, 0, 0, 1],
-                               [0, 0, 1, 1],
-                               [0, 0, 1, 0],
-                               [0, 1, 1, 0],
-                               [0, 1, 0, 0],
-                               [1, 1, 0, 0],
-                               [1, 0, 0, 0],
-                               [1, 0, 0, 1]]
+                # Define sensor channels
+                light_channel = 0
+                temp_channel = 1
 
-                        for i in range(128):
-                            ### GO THROUGH THE SEQUENCE ONCE ###
-                            for halfstep in range(8):
-                                ### GO THROUGH EACH HALF-STEP ###
-                                for pin in range(4):
-                                    ### SET EACH PIN ###
-                                    GPIO.output(ControlPin[pin], seq[halfstep][pin])
-                                time.sleep(0.001)
-                    elif toestandBlind[0] == 0:
-                        print("Blind gaat toe")
-
-                        for pin in ControlPin:
-                            GPIO.setup(pin, GPIO.OUT)
-                            GPIO.output(pin, 0)
-
-                        seq = [[1, 0, 0, 0],
-                               [1, 1, 0, 0],
-                               [0, 1, 0, 0],
-                               [0, 1, 1, 0],
-                               [0, 0, 1, 0],
-                               [0, 0, 1, 1],
-                               [0, 0, 0, 1],
-                               [1, 0, 0, 1]]
-
-                        for i in range(2048):
-                            ### GO THROUGH THE SEQUENCE ONCE ###
-                            for halfstep in range(8):
-                                ### GO THROUGH EACH HALF-STEP ###
-                                for pin in range(4):
-                                    ### SET EACH PIN ###
-                                    GPIO.output(ControlPin[pin], seq[halfstep][pin])
-                                time.sleep(0.001)
-
-                # ===TOESTANDFAN=======
-                def toestandFan():
-                    db = DbClass()
-                    print("toestand van fan checken:")
-                    toestandFan = db.getToestandfan()
-                    if toestandFan[0] == 1:
-                        print("Fan staat aan")
-                        # ===Data weschrijven==
-                        datum = datetime.datetime.now()
-                        uur = datetime.datetime.now()
-                        reden = "Fan manually started by the user."
-
-                        db = DbClass()
-                        db.setDataToLog(reden, datum, uur)
-
-                        # ===Start fan=========
-                        t1=Thread(target=openfan)
-                        t1.start()
-                    elif toestandFan[0] == 0:
-                        print("Fan staat uit")
-
-                        # ===Stop fan=========
-                        import RPi.GPIO as GPIO
-                        GPIO.setmode(GPIO.BOARD)
-                        print('Stop')
-                        GPIO.setup(37, GPIO.OUT)
-                        GPIO.output(37, GPIO.LOW)
-                        GPIO.setup(37, GPIO.IN)
-                        GPIO.cleanup()
+                # Define delay between readings
+                delay = 2
 
                 # Read the light sensor data
                 light_level = ReadChannel(light_channel)
@@ -184,21 +100,347 @@ class ThreadingExample(object):
 
                 # Print out results
 
-                #print("Light: {} ".format(light_level))
-                #print("Temp : {} deg C".format(int(temp)))
-                licht = light_level
-                temperatuur = temp
+                print("Light: {} ".format(light_level))
+                print("Temp : {} deg C".format(int(temp)))
+                # licht = light_level
+                # temperatuur = temp
 
                 # db = DbClass()
                 # db.setDataToData(temperatuur,licht)
 
+
+                print("Checking state of devices:")
+                # ===TOESTANDBLIND====
+                def toestandLight():
+                    print("Light or No light")
+                    db = DbClass()
+                    toestandBlindLight = db.getToestandlight()
+                    toestandBlindNoLight = db.getToestandnolight()
+                    toestandBlind = db.getToestandblind()
+                    if toestandBlindLight[0] == 1:
+                        print("Light = GO")
+                        if toestandBlind[0] == 0 and light_level < 800:
+                            print("Blind is opening due to light")
+                            # # ===Data weschrijven==
+                            # datum = datetime.datetime.now()
+                            # uur = datetime.datetime.now()
+                            # reden = "Blind automatically opened by cause of light."
+                            #
+                            # db = DbClass()
+                            # db.setDataToLog(reden, datum, uur)
+
+                            # === Open blind ========
+                            import spidev
+
+                            import RPi.GPIO as GPIO
+                            import time
+
+                            spi = spidev.SpiDev()
+                            spi.open(0, 0)
+
+                            GPIO.setwarnings(False)
+                            GPIO.setmode(GPIO.BOARD)
+
+                            ControlPin = [7, 11, 13, 15]
+
+                            for pin in ControlPin:
+                                GPIO.setup(pin, GPIO.OUT)
+                                GPIO.output(pin, 0)
+
+                            seq = [[0, 0, 0, 1],
+                                   [0, 0, 1, 1],
+                                   [0, 0, 1, 0],
+                                   [0, 1, 1, 0],
+                                   [0, 1, 0, 0],
+                                   [1, 1, 0, 0],
+                                   [1, 0, 0, 0],
+                                   [1, 0, 0, 1]]
+
+                            for i in range(2048):
+                                ### GO THROUGH THE SEQUENCE ONCE ###
+                                for halfstep in range(8):
+                                    ### GO THROUGH EACH HALF-STEP ###
+                                    for pin in range(4):
+                                        ### SET EACH PIN ###
+                                        GPIO.output(ControlPin[pin], seq[halfstep][pin])
+                                    time.sleep(0.001)
+                            db.updateToestandBlind(1)
+                        elif toestandBlind[0] == 1 and light_level > 800:
+                            # Close blind
+                            print("Blind is closing due to no light")
+                            import spidev
+
+                            import RPi.GPIO as GPIO
+                            import time
+
+                            spi = spidev.SpiDev()
+                            spi.open(0, 0)
+
+                            GPIO.setwarnings(False)
+                            GPIO.setmode(GPIO.BOARD)
+
+                            ControlPin = [7, 11, 13, 15]
+
+                            for pin in ControlPin:
+                                GPIO.setup(pin, GPIO.OUT)
+                                GPIO.output(pin, 0)
+
+                            seq = [[1, 0, 0, 0],
+                                   [1, 1, 0, 0],
+                                   [0, 1, 0, 0],
+                                   [0, 1, 1, 0],
+                                   [0, 0, 1, 0],
+                                   [0, 0, 1, 1],
+                                   [0, 0, 0, 1],
+                                   [1, 0, 0, 1]]
+
+                            for i in range(2048):
+                                ### GO THROUGH THE SEQUENCE ONCE ###
+                                for halfstep in range(8):
+                                    ### GO THROUGH EACH HALF-STEP ###
+                                    for pin in range(4):
+                                        ### SET EACH PIN ###
+                                        GPIO.output(ControlPin[pin], seq[halfstep][pin])
+                                    time.sleep(0.001)
+                            db.updateToestandBlind(0)
+                    elif toestandBlindLight[0] == 1:
+                        print("Light = NO")
+                        if toestandBlind[0] == 0 and light_level > 800:
+                            print("Blind is opening due to no light")
+                            import spidev
+
+                            import RPi.GPIO as GPIO
+                            import time
+
+                            spi = spidev.SpiDev()
+                            spi.open(0, 0)
+
+                            GPIO.setwarnings(False)
+                            GPIO.setmode(GPIO.BOARD)
+
+                            ControlPin = [7, 11, 13, 15]
+
+                            for pin in ControlPin:
+                                GPIO.setup(pin, GPIO.OUT)
+                                GPIO.output(pin, 0)
+
+                            seq = [[0, 0, 0, 1],
+                                   [0, 0, 1, 1],
+                                   [0, 0, 1, 0],
+                                   [0, 1, 1, 0],
+                                   [0, 1, 0, 0],
+                                   [1, 1, 0, 0],
+                                   [1, 0, 0, 0],
+                                   [1, 0, 0, 1]]
+
+                            for i in range(2048):
+                                ### GO THROUGH THE SEQUENCE ONCE ###
+                                for halfstep in range(8):
+                                    ### GO THROUGH EACH HALF-STEP ###
+                                    for pin in range(4):
+                                        ### SET EACH PIN ###
+                                        GPIO.output(ControlPin[pin], seq[halfstep][pin])
+                                    time.sleep(0.001)
+                            db.updateToestandBlind(1)
+                        elif toestandBlind[0] == 1 and light_level < 800:
+                            print("Blind is closing due to light")
+                            # Close blind
+                            print("Blind is closing due to no light")
+                            import spidev
+
+                            import RPi.GPIO as GPIO
+                            import time
+
+                            spi = spidev.SpiDev()
+                            spi.open(0, 0)
+
+                            GPIO.setwarnings(False)
+                            GPIO.setmode(GPIO.BOARD)
+
+                            ControlPin = [7, 11, 13, 15]
+
+                            for pin in ControlPin:
+                                GPIO.setup(pin, GPIO.OUT)
+                                GPIO.output(pin, 0)
+
+                            seq = [[1, 0, 0, 0],
+                                   [1, 1, 0, 0],
+                                   [0, 1, 0, 0],
+                                   [0, 1, 1, 0],
+                                   [0, 0, 1, 0],
+                                   [0, 0, 1, 1],
+                                   [0, 0, 0, 1],
+                                   [1, 0, 0, 1]]
+
+                            for i in range(2048):
+                                ### GO THROUGH THE SEQUENCE ONCE ###
+                                for halfstep in range(8):
+                                    ### GO THROUGH EACH HALF-STEP ###
+                                    for pin in range(4):
+                                        ### SET EACH PIN ###
+                                        GPIO.output(ControlPin[pin], seq[halfstep][pin])
+                                    time.sleep(0.001)
+                            db.updateToestandBlind(0)
+                    # elif light_level > 800:
+                    #     print("Blind is closing")
+                    #     # t2 = Thread(target=closeblind)
+                    #     # t2.start()
+
+                    # elif light_level > 800 and toestandBlindNoLight[0] == 1:
+                    #     print("Blind is closing due to less light")
+                    #
+                    #     # # ===Data weschrijven==
+                    #     # datum = datetime.datetime.now()
+                    #     # uur = datetime.datetime.now()
+                    #     # reden = "Blind automatically closed by cause of no light."
+                    #     #
+                    #     # db = DbClass()
+                    #     # db.setDataToLog(reden, datum, uur)
+                    #
+                    #     # === Close blind =======
+                    #     t2=Thread(target=closeblind)
+                    #     t2.start()
+
+                # ===TOESTANDFAN====
+                def toestandWarmth():
+                    print("Too hot or too cold")
+                    db = DbClass()
+                    toestandFanHot = db.getToestandhot()
+                    toestandFanCold = db.getToestandcold()
+                    toestandFan = db.getToestandfan()
+                    if toestandFanHot[0] == 1:
+                        print("Too Hot = GO")
+                        if toestandFan[0] == 0 and int(temp) > 20:
+                            print("Fan is automatically starting")
+                        else:
+                            print("Fan is automatically stopping")
+                    elif toestandFanCold[0] == 1:
+                        print("Too cold = GO")
+                        if toestandFan[0] == 0 and int(temp) > 20:
+                            print("Fan is automatically starting")
+                        else:
+                            print("Fan is auotmatically stopping")
+
+                # ===TOESTANDFAN=======
+                def toestandFan():
+                    db = DbClass()
+                    toestandFan = db.getToestandfan()
+                    if toestandFan[0] == 1:
+                        print("Fan is on")
+
+                        # ===Start fan=========
+                        t3=Thread(target=startfan)
+                        t3.start()
+
+                    elif toestandFan[0] == 0:
+                        print("Fan is off")
+
+                        # ===Stop fan=========
+                        t4=Thread(target=stopfan)
+                        t4.start()
+
+                # ===AUTOMATIZATION LIGHT===
+                # def toestandBlind():
+                #     db = DbClass()
+                #     toestandBlind = db.getToestandblind()
+                #     if toestandBlind[0] == 1:
+                #         print("Blind is open")
+                #
+                #         # === Open blind ========
+                #         t1=Thread(target=openblind)
+                #         t1.start()
+                #
+                #     elif toestandBlind[0] == 0:
+                #         print("Blind is closed")
+                #
+                #         # === Close blind =======
+                #         t2=Thread(target=closeblind)
+                #         t2.start()
+
                 # Wait before repeating loop
+                toestandLight()
+                toestandWarmth()
                 toestandFan()
                 time.sleep(delay)
 
             time.sleep(self.interval)
 
-def openfan():
+
+def openblind():
+    db = DbClass
+    db.updateToestandBlind(1)
+    import spidev
+
+    import RPi.GPIO as GPIO
+    import time
+
+    spi = spidev.SpiDev()
+    spi.open(0, 0)
+
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BOARD)
+
+    ControlPin = [7, 11, 13, 15]
+
+    for pin in ControlPin:
+        GPIO.setup(pin, GPIO.OUT)
+        GPIO.output(pin, 0)
+
+    seq = [[0, 0, 0, 1],
+           [0, 0, 1, 1],
+           [0, 0, 1, 0],
+           [0, 1, 1, 0],
+           [0, 1, 0, 0],
+           [1, 1, 0, 0],
+           [1, 0, 0, 0],
+           [1, 0, 0, 1]]
+
+    for i in range(2048):
+        ### GO THROUGH THE SEQUENCE ONCE ###
+        for halfstep in range(8):
+            ### GO THROUGH EACH HALF-STEP ###
+            for pin in range(4):
+                ### SET EACH PIN ###
+                GPIO.output(ControlPin[pin], seq[halfstep][pin])
+            time.sleep(0.001)
+
+def closeblind():
+    import spidev
+
+    import RPi.GPIO as GPIO
+    import time
+
+    spi = spidev.SpiDev()
+    spi.open(0, 0)
+
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BOARD)
+
+    ControlPin = [7, 11, 13, 15]
+
+    for pin in ControlPin:
+        GPIO.setup(pin, GPIO.OUT)
+        GPIO.output(pin, 0)
+
+    seq = [[1, 0, 0, 0],
+           [1, 1, 0, 0],
+           [0, 1, 0, 0],
+           [0, 1, 1, 0],
+           [0, 0, 1, 0],
+           [0, 0, 1, 1],
+           [0, 0, 0, 1],
+           [1, 0, 0, 1]]
+
+    for i in range(2048):
+        ### GO THROUGH THE SEQUENCE ONCE ###
+        for halfstep in range(8):
+            ### GO THROUGH EACH HALF-STEP ###
+            for pin in range(4):
+                ### SET EACH PIN ###
+                GPIO.output(ControlPin[pin], seq[halfstep][pin])
+            time.sleep(0.001)
+
+def startfan():
     import RPi.GPIO as GPIO
     import time
     GPIO.setwarnings(False)
@@ -213,7 +455,7 @@ def openfan():
 
     try:
         while True:
-            print("loop")
+            print("Fan is turning")
             for i in range(100):
                 p.ChangeDutyCycle(i)
                 time.sleep(0.02)
@@ -226,7 +468,25 @@ def openfan():
 
     p.stop()
 
-    GPIO.cleanup()
+    GPIO.cleanup(37)
+
+def stopfan():
+    import RPi.GPIO as GPIO
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(37, GPIO.OUT)
+    GPIO.output(37, GPIO.LOW)
+    GPIO.setup(37, GPIO.IN)
+    GPIO.cleanup(37)
+
+# def checklighton():
+#     print('Checking if "light" is selected')
+#     db=DbClass
+#     db.updateToestandBlind(1)
+#
+# def checklightoff():
+#     print('Checking if "no light" is selected')
+#     db = DbClass
+#     db.updateToestandBlind(0)
 
 app = Flask(__name__)
 ThreadingExample()
@@ -236,10 +496,22 @@ temp = 0
 print(temp)
 
 def open_blinds(reden):
+    import spidev
+
+    import RPi.GPIO as GPIO
+    import time
+
+    spi = spidev.SpiDev()
+    spi.open(0, 0)
+
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BOARD)
+
+    ControlPin = [7, 11, 13, 15]
+
     datum = datetime.datetime.now()
     uur = datetime.datetime.now()
     reden = reden
-
     db = DbClass()
     db.setDataToLog(reden, datum, uur)
 
@@ -256,7 +528,7 @@ def open_blinds(reden):
            [1, 0, 0, 0],
            [1, 0, 0, 1]]
 
-    for i in range(128):
+    for i in range(2048):
         ### GO THROUGH THE SEQUENCE ONCE ###
         for halfstep in range(8):
             ### GO THROUGH EACH HALF-STEP ###
@@ -266,6 +538,19 @@ def open_blinds(reden):
             time.sleep(0.001)
 
 def close_blinds(reden):
+    import spidev
+
+    import RPi.GPIO as GPIO
+    import time
+
+    spi = spidev.SpiDev()
+    spi.open(0, 0)
+
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BOARD)
+
+    ControlPin = [7, 11, 13, 15]
+
     datum = datetime.datetime.now()
     uur = datetime.datetime.now()
     reden = reden
@@ -345,27 +630,31 @@ def close_blinds(reden):
 #             GPIO.setup(37, GPIO.IN)
 #             GPIO.cleanup()
 
-def stop_fan(reden):
-    #===Data weschrijven==
-    datum = datetime.datetime.now()
-    uur = datetime.datetime.now()
-    reden = reden
+# def stop_fan(reden):
+#     #===Data weschrijven==
+#     datum = datetime.datetime.now()
+#     uur = datetime.datetime.now()
+#     reden = reden
+#
+#     db = DbClass()
+#     db.setDataToLog(reden, datum, uur)
+#
+#     #===Stop fan=========
+#     import RPi.GPIO as GPIO
+#     GPIO.setmode(GPIO.BOARD)
+#     print('Stop')
+#     GPIO.setup(37, GPIO.OUT)
+#     GPIO.output(37, GPIO.LOW)
+#     GPIO.setup(37, GPIO.IN)
+#     GPIO.cleanup()
 
-    db = DbClass()
-    db.setDataToLog(reden, datum, uur)
 
-    #===Stop fan=========
-    import RPi.GPIO as GPIO
-    GPIO.setmode(GPIO.BOARD)
-    print('Stop')
-    GPIO.setup(37, GPIO.OUT)
-    GPIO.output(37, GPIO.LOW)
-    GPIO.setup(37, GPIO.IN)
-    GPIO.cleanup()
 #==================================
 
-        # config
 
+
+#=======================
+#config
 
 app.secret_key = "my precious"
 
@@ -429,29 +718,22 @@ def index():
     if request.method == 'POST':
         button = request.form['button']
 
-        # 1 gesloten 0 is open
+        # 1 open 0 is closed
         if button == "Open" and toestandblind[0] == 0:
+            open_blinds("Blind manually opened by the user.")
             db.updateToestandBlind(1)
-            datum = datetime.datetime.now()
-            uur = datetime.datetime.now()
-            reden = "Blind manually opened by the user."
-
-            db = DbClass()
-            db.setDataToLog(reden, datum, uur)
-
+            db.updateToestandLight(0)
+            db.updateToestandNolight(0)
             return redirect(url_for('index'))
 
         if button == "Close" and toestandblind[0] == 1:
+            close_blinds("Blind manually closed by the user.")
             db.updateToestandBlind(0)
-
-            datum = datetime.datetime.now()
-            uur = datetime.datetime.now()
-            reden = "Blind manually closed by the user."
-            db = DbClass()
-            db.setDataToLog(reden, datum, uur)
+            db.updateToestandLight(0)
+            db.updateToestandNolight(0)
             return redirect(url_for('index'))
 
-        # 1 gesloten 0 is open
+        # 1 on 0 is off
         if button == "Start" and toestandfan[0] == 0:
             db.updateToestandFan(1)
             # ===Data weschrijven==
@@ -583,6 +865,8 @@ def index():
     #cur = g.db.execute('select * from posts')
     #posts = [dict(title=row[0], description=row[1]) for row in cur.fetchall()]
     #g.db.close()
+
+
     return render_template('index.html', toestandblind=toestandblind, toestandfan=toestandfan) #, posts=posts)
 
 @app.route('/devices')
@@ -600,117 +884,96 @@ def devicedetail(deviceid):
     switch = 0
     if request.method == 'POST':
         button = request.form['button']
-        if button == 'Open':
-            for pin in ControlPin:
-                GPIO.setup(pin, GPIO.OUT)
-                GPIO.output(pin, 0)
+        if button == "light":
+            db.updateToestandLight(1)
+            # return redirect(url_for('/devicedetail/<deviceid>'))
+        if button == "no light":
+            db.updateToestandNolight(1)
+            # return redirect(url_for('/devicedetail/<deviceid>'))
 
-            seq = [[1, 0, 0, 0],
-                   [1, 1, 0, 0],
-                   [0, 1, 0, 0],
-                   [0, 1, 1, 0],
-                   [0, 0, 1, 0],
-                   [0, 0, 1, 1],
-                   [0, 0, 0, 1],
-                   [1, 0, 0, 1]]
+            # # Define Variables
+            # delay = 0.5
+            # ldr_channel = 0
+            #
+            # # Create SPI
+            # spi = spidev.SpiDev()
+            # spi.open(0, 0)
+            #
+            # def readadc(adcnum):
+            #     # read SPI data from the MCP3008, 8 channels in total
+            #     if adcnum > 7 or adcnum < 0:
+            #         return -1
+            #     r = spi.xfer2([1, 8 + adcnum << 4, 0])
+            #     data = ((r[1] & 3) << 8) + r[2]
+            #     return data
+            #
+            # while True:
+            #     ldr_value = readadc(ldr_channel)
+            #     print(ldr_value)
+            #     time.sleep(delay)
+            #
+            #     if ldr_value > 800 and switch ==0:
+            #         switch=1
+            #         for pin in ControlPin:
+            #             GPIO.setup(pin, GPIO.OUT)
+            #             GPIO.output(pin, 0)
+            #         seq = [[1, 0, 0, 0],
+            #                [1, 1, 0, 0],
+            #                [0, 1, 0, 0],
+            #                [0, 1, 1, 0],
+            #                [0, 0, 1, 0],
+            #                [0, 0, 1, 1],
+            #                [0, 0, 0, 1],
+            #                [1, 0, 0, 1]]
+            #         for i in range(512):
+            #             ### GO THROUGH THE SEQUENCE ONCE ###
+            #             for halfstep in range(8):
+            #                 ### GO THROUGH EACH HALF-STEP ###
+            #                 for pin in range(4):
+            #                     ### SET EACH PIN ###
+            #                     GPIO.output(ControlPin[pin], seq[halfstep][pin])
+            #                 time.sleep(0.001)
+            #
+            #     elif ldr_value < 800 and switch ==1:
+            #         switch = 0
+            #         for pin in ControlPin:
+            #             GPIO.setup(pin, GPIO.OUT)
+            #             GPIO.output(pin, 0)
+            #
+            #         seq = [[0, 0, 0, 1],
+            #                [0, 0, 1, 1],
+            #                [0, 0, 1, 0],
+            #                [0, 1, 1, 0],
+            #                [0, 1, 0, 0],
+            #                [1, 1, 0, 0],
+            #                [1, 0, 0, 0],
+            #                [1, 0, 0, 1]]
+            #
+            #         for i in range(512):
+            #             ### GO THROUGH THE SEQUENCE ONCE ###
+            #             for halfstep in range(8):
+            #                 ### GO THROUGH EACH HALF-STEP ###
+            #                 for pin in range(4):
+            #                     ### SET EACH PIN ###
+            #                     GPIO.output(ControlPin[pin], seq[halfstep][pin])
+            #                 time.sleep(0.001)
 
-            for i in range(512):
-                ### GO THROUGH THE SEQUENCE ONCE ###
-                for halfstep in range(8):
-                    ### GO THROUGH EACH HALF-STEP ###
-                    for pin in range(4):
-                        ### SET EACH PIN ###
-                        GPIO.output(ControlPin[pin], seq[halfstep][pin])
-                    time.sleep(0.001)
-        elif button == 'Close':
-            for pin in ControlPin:
-                GPIO.setup(pin, GPIO.OUT)
-                GPIO.output(pin, 0)
+        if button == "turn off blindscene":
+            db.updateToestandLight(0)
+            db.updateToestandNolight(0)
 
-            seq = [[0, 0, 0, 1],
-                   [0, 0, 1, 1],
-                   [0, 0, 1, 0],
-                   [0, 1, 1, 0],
-                   [0, 1, 0, 0],
-                   [1, 1, 0, 0],
-                   [1, 0, 0, 0],
-                   [1, 0, 0, 1]]
+        if button == "Warmer":
+            db.updateToestandHot(1)
+            # return redirect(url_for('/devicedetail/<deviceid>'))
+        if button == "cooler":
+            db.updateToestandCold(1)
 
-            for i in range(512):
-                ### GO THROUGH THE SEQUENCE ONCE ###
-                for halfstep in range(8):
-                    ### GO THROUGH EACH HALF-STEP ###
-                    for pin in range(4):
-                        ### SET EACH PIN ###
-                        GPIO.output(ControlPin[pin], seq[halfstep][pin])
-                    time.sleep(0.001)
-        if button == 'Geen licht-open gordijn':
-            # Define Variables
-            delay = 0.5
-            ldr_channel = 0
+        if button == "turn off fanscene":
+            db.updateToestandHot(0)
+            db.updateToestandCold(0)
 
-            # Create SPI
-            spi = spidev.SpiDev()
-            spi.open(0, 0)
-
-            def readadc(adcnum):
-                # read SPI data from the MCP3008, 8 channels in total
-                if adcnum > 7 or adcnum < 0:
-                    return -1
-                r = spi.xfer2([1, 8 + adcnum << 4, 0])
-                data = ((r[1] & 3) << 8) + r[2]
-                return data
-
-            while True:
-                ldr_value = readadc(ldr_channel)
-                print(ldr_value)
-                time.sleep(delay)
-
-                if ldr_value > 800 and switch ==0:
-                    switch=1
-                    for pin in ControlPin:
-                        GPIO.setup(pin, GPIO.OUT)
-                        GPIO.output(pin, 0)
-                    seq = [[1, 0, 0, 0],
-                           [1, 1, 0, 0],
-                           [0, 1, 0, 0],
-                           [0, 1, 1, 0],
-                           [0, 0, 1, 0],
-                           [0, 0, 1, 1],
-                           [0, 0, 0, 1],
-                           [1, 0, 0, 1]]
-                    for i in range(512):
-                        ### GO THROUGH THE SEQUENCE ONCE ###
-                        for halfstep in range(8):
-                            ### GO THROUGH EACH HALF-STEP ###
-                            for pin in range(4):
-                                ### SET EACH PIN ###
-                                GPIO.output(ControlPin[pin], seq[halfstep][pin])
-                            time.sleep(0.001)
-
-                elif ldr_value < 800 and switch ==1:
-                    switch = 0
-                    for pin in ControlPin:
-                        GPIO.setup(pin, GPIO.OUT)
-                        GPIO.output(pin, 0)
-
-                    seq = [[0, 0, 0, 1],
-                           [0, 0, 1, 1],
-                           [0, 0, 1, 0],
-                           [0, 1, 1, 0],
-                           [0, 1, 0, 0],
-                           [1, 1, 0, 0],
-                           [1, 0, 0, 0],
-                           [1, 0, 0, 1]]
-
-                    for i in range(512):
-                        ### GO THROUGH THE SEQUENCE ONCE ###
-                        for halfstep in range(8):
-                            ### GO THROUGH EACH HALF-STEP ###
-                            for pin in range(4):
-                                ### SET EACH PIN ###
-                                GPIO.output(ControlPin[pin], seq[halfstep][pin])
-                            time.sleep(0.001)
+        if button == "update fanscene":
+            print("Waarden doorgeven")
 
         # if button == 'Warmer dan'
         #
@@ -752,36 +1015,5 @@ def contact():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT",5000))
     app.run(host='0.0.0.0', port=5000, debug=True)
-
-# def checkLight():
-#     db = DbClass
-#     if db.getLicht() == 'Wakeup':
-#         for pin in ControlPin:
-#             GPIO.setup(pin, GPIO.OUT)
-#             GPIO.output(pin, 0)
-#
-#         seq = [[1, 0, 0, 0],
-#                [1, 1, 0, 0],
-#                [0, 1, 0, 0],
-#                [0, 1, 1, 0],
-#                [0, 0, 1, 0],
-#                [0, 0, 1, 1],
-#                [0, 0, 0, 1],
-#                [1, 0, 0, 1]]
-#
-#         for i in range(512):
-#             ### GO THROUGH THE SEQUENCE ONCE ###
-#             for halfstep in range(8):
-#                 ### GO THROUGH EACH HALF-STEP ###
-#                 for pin in range(4):
-#                     ### SET EACH PIN ###
-#                     GPIO.output(ControlPin[pin], seq[halfstep][pin])
-#                 time.sleep(0.001)
-#         GPIO.cleanup()
-
-
-
-#===Steppermotor=========================
-
 
 print(temp)

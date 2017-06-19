@@ -36,8 +36,8 @@
 
             <div class="buttons_group">
                 <form method="post">
-                    <input class="knop" type="submit" value="Open" name="button"> {# {% if toestandblind[0] ==1 %} style="background-color: #cccccc" {% endif %} #}
-                    <input class="knop" type="submit" value="Close" name="button"> {# {% if toestandblind[0] ==0 %} style="background-color: #cccccc" {% endif %} #}
+                    <input class="knop" type="submit" value="Open" name="button" {% if toestandblind[0] ==1 %} style="background-color: #524a46" {% endif %}>
+                    <input class="knop" type="submit" value="Close" name="button" {% if toestandblind[0] ==0 %} style="background-color: #524a46" {% endif %}>
                     state of blind: {% if toestandblind[0] == 1 %} open {% elif toestandblind[0] == 0 %} closed {% endif %}
 {#                    <label class="switch">#}
 {#                        <input class="knop" type="checkbox" value="Start" name="button">#}
@@ -47,8 +47,8 @@
             </div>
             <div class="buttons_group">
                 <form method="post">
-                    <input class="knop" type="submit" value="Start" name="button">
-                    <input class="knop" type="submit" value="Stop" name="button">
+                    <input class="knop" type="submit" value="Start" name="button" {% if toestandfan[0] ==1 %} style="background-color: #524a46" {% endif %}>
+                    <input class="knop" type="submit" value="Stop" name="button" {% if toestandfan[0] ==0 %} style="background-color: #524a46" {% endif %}>
                     state of fan: {% if toestandfan[0] == 1 %} on {% elif toestandfan[0] == 0 %} off {% endif %}
                 </form>
             </div>
