@@ -24,12 +24,12 @@
             <br>
             <form method="post" class="scene">
                 <div class="invoer">If the sensor detects:
-                <input class="keuze" type="submit" value="light" name="button">
-                 or <input class="keuze" type="submit" value="no light" name="button">
+                <input class="keuze" type="submit" value="light" name="button" {% if toestandlight[0] == 1 %} style="background-color: #524a46" {% endif %}>
+                 or <input class="keuze" type="submit" value="no light" name="button"{% if toestandnolight[0] ==1 %} style="background-color: #524a46" {% endif %}>
                 then the blind will open itself, otherwise it will close itself.
                 </div> <br>
-                <input class="knop" type="submit" value="update blindscene" name="button">
-                <input class="knop" type="submit" value="turn off blindscene" name="button">
+{#                <input class="knop" type="submit" value="update blindscene" name="button">#}
+                <input class="knop" type="submit" value="turn off blindscene" name="button" {% if toestandlight[0] == 0 and toestandnolight[0] == 0 %} style="background-color: #524a46" {% endif %}>
             </form>
 
     {% elif device[0]==2 %}
@@ -37,14 +37,14 @@
             <form class="container" method="post">
                 <div class="scene_center">Scene</div>
                 <br>
-                <div class="invoer">If the roomtemperature is:
-                <input class="keuze" type="submit" value="warmer" name="button">
-                 or <input class="keuze" type="submit" value="cooler" name="button"> then
-                <input class="input" placeholder="15 °c" name="temperatuur"> then the fan will automatically turn or, otherwise it will turn off itself.
+                <div class="invoer">If the roomtemperature is
+{#                <input class="keuze" type="submit" value="warmer" name="button">or#}
+                <input class="keuze" type="submit" value="warmer" name="button" {% if toestandhot[0] == 1 %} style="background-color: #524a46" {% endif %}> than
+                <input class="input" placeholder="20 °c" name="temperatuur"> then the fan will automatically turn on, otherwise it will turn off itself.
                 </div>
                 <br>
                 <input class="knop" type="submit" value="update fanscene" name="button">
-                <input class="knop" type="submit" value="turn off fanscene" name="button">
+                <input class="knop" type="submit" value="turn off fanscene" name="button" {% if toestandhot[0] == 0 %} style="background-color: #524a46" {% endif %}>
 {#                <br>#}
 {#                <input placeholder="naam" name="naam" required><br>#}
 {#                <input class="checkbox" type="checkbox" name="geraden" value="geraden_aan_uit">#}
@@ -56,16 +56,14 @@
 {#                <option value="Sluit">stopt</option>#}
 {#                </select>#}
 {#                de ventilator.#}
-                </div>
-                <input class="knop" type="submit" value="Warmer dan" name="button">
-                <input class="knop" type="submit" value="Kouder dan" name="button">
-                <input class="knop" type="submit" value="Updaten" name="button">
+{#                </div>#}
+{#                <input class="knop" type="submit" value="Warmer dan" name="button">#}
+{#                <input class="knop" type="submit" value="Kouder dan" name="button">#}
+{#                <input class="knop" type="submit" value="Updaten" name="button">#}
 
             </form>
 
     {% endif %}
-
-    </div>
 
 
     <script>

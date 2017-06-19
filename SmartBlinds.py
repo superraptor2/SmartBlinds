@@ -100,8 +100,8 @@ class ThreadingExample(object):
 
                 # Print out results
 
-                print("Light: {} ".format(light_level))
-                print("Temp : {} deg C".format(int(temp)))
+                #=======================================print("Light: {} ".format(light_level))
+                #=======================================print("Temp : {} deg C".format(int(temp)))
                 # licht = light_level
                 # temperatuur = temp
 
@@ -109,16 +109,16 @@ class ThreadingExample(object):
                 # db.setDataToData(temperatuur,licht)
 
 
-                print("Checking state of devices:")
+                #=======================================print("Checking state of devices:")
                 # ===TOESTANDBLIND====
                 def toestandLight():
-                    print("Light or No light")
+                    print("Light or no light")
                     db = DbClass()
                     toestandBlindLight = db.getToestandlight()
                     toestandBlindNoLight = db.getToestandnolight()
                     toestandBlind = db.getToestandblind()
                     if toestandBlindLight[0] == 1:
-                        print("Light = GO")
+                        print("Blind moet opengaan als het klaar is")
                         if toestandBlind[0] == 0 and light_level < 800:
                             print("Blind is opening due to light")
                             # # ===Data weschrijven==
@@ -203,8 +203,8 @@ class ThreadingExample(object):
                                         GPIO.output(ControlPin[pin], seq[halfstep][pin])
                                     time.sleep(0.001)
                             db.updateToestandBlind(0)
-                    elif toestandBlindLight[0] == 1:
-                        print("Light = NO")
+                    elif toestandBlindNoLight[0] == 1:
+                        print("Blind moet opengaan als het donker is")
                         if toestandBlind[0] == 0 and light_level > 800:
                             print("Blind is opening due to no light")
                             import spidev
@@ -303,24 +303,34 @@ class ThreadingExample(object):
 
                 # ===TOESTANDFAN====
                 def toestandWarmth():
-                    print("Too hot or too cold")
+                    print("Warmth or no warmth")
                     db = DbClass()
                     toestandFanHot = db.getToestandhot()
                     toestandFanCold = db.getToestandcold()
                     toestandFan = db.getToestandfan()
                     if toestandFanHot[0] == 1:
-                        print("Too Hot = GO")
+                        print("Warmer then, fan will start automatically")
                         if toestandFan[0] == 0 and int(temp) > 20:
-                            print("Fan is automatically starting")
-                        else:
-                            print("Fan is automatically stopping")
-                    elif toestandFanCold[0] == 1:
-                        print("Too cold = GO")
-                        if toestandFan[0] == 0 and int(temp) > 20:
-                            print("Fan is automatically starting")
-                        else:
-                            print("Fan is auotmatically stopping")
+                            db.updateToestandFan(1)
+                            # print("Fan is turning")
 
+                        elif toestandFan[0] == 1 and int(temp) < 20:
+                            db.updateToestandFan(0)
+                            # print("Fan not turning")
+
+                    elif toestandFanCold[0] == 1:
+                        print("Warmer then, fan will start automatically")
+                        if toestandFan[0] == 0 and int(temp) > 20:
+                            db.updateToestandFan(1)
+                            # print("Fan is turning")
+
+                        else:
+                            db.updateToestandFan(0)
+                            # print("Fan not turning")
+
+                    elif toestandFanCold[0] == 0 and toestandFanHot[0] == 0:
+                        print("Fan has to be off")
+                        db.updateToestandFan(0)
                 # ===TOESTANDFAN=======
                 def toestandFan():
                     db = DbClass()
@@ -471,6 +481,44 @@ def startfan():
     GPIO.cleanup(37)
 
 def stopfan():
+    import RPi.GPIO as GPIO
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(37, GPIO.OUT)
+    GPIO.output(37, GPIO.LOW)
+    GPIO.setup(37, GPIO.IN)
+    GPIO.cleanup(37)
+
+def startautofan():
+    import RPi.GPIO as GPIO
+    import time
+    GPIO.setwarnings(False)
+
+    GPIO.setmode(GPIO.BOARD)
+
+    GPIO.setup(37, GPIO.OUT)
+
+    p = GPIO.PWM(37, 0.8)
+
+    p.start(0)
+
+    try:
+        while True:
+            print("Fan is turning")
+            for i in range(100):
+                p.ChangeDutyCycle(i)
+                time.sleep(0.02)
+            for i in range(100):
+                p.ChangeDutyCycle(100 - i)
+                time.sleep(0.02)
+
+    except KeyboardInterrupt:
+        pass
+
+    p.stop()
+
+    GPIO.cleanup(37)
+
+def stopautofan():
     import RPi.GPIO as GPIO
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(37, GPIO.OUT)
@@ -880,15 +928,21 @@ def devices():
 @login_required
 def devicedetail(deviceid):
     db = DbClass()
+    toestandlight = db.getToestandlight()
+    toestandnolight = db.getToestandnolight()
+    toestandhot = db.getToestandhot()
     devicedetail = db.getDevice(deviceid)
     switch = 0
     if request.method == 'POST':
         button = request.form['button']
         if button == "light":
             db.updateToestandLight(1)
-            # return redirect(url_for('/devicedetail/<deviceid>'))
+            db.updateToestandNolight(0)
+            return redirect(url_for('devices'))
         if button == "no light":
             db.updateToestandNolight(1)
+            db.updateToestandLight(0)
+            return redirect(url_for('devices'))
             # return redirect(url_for('/devicedetail/<deviceid>'))
 
             # # Define Variables
@@ -961,19 +1015,26 @@ def devicedetail(deviceid):
         if button == "turn off blindscene":
             db.updateToestandLight(0)
             db.updateToestandNolight(0)
+            return redirect(url_for('devices'))
 
-        if button == "Warmer":
+        if button == "warmer":
             db.updateToestandHot(1)
+            db.updateToestandCold(0)
+            return redirect(url_for('devices'))
+
             # return redirect(url_for('/devicedetail/<deviceid>'))
         if button == "cooler":
             db.updateToestandCold(1)
+            db.updateToestandHot(0)
 
         if button == "turn off fanscene":
             db.updateToestandHot(0)
             db.updateToestandCold(0)
+            return  redirect(url_for('devices'))
 
         if button == "update fanscene":
             print("Waarden doorgeven")
+            return redirect(url_for('devices'))
 
         # if button == 'Warmer dan'
         #
@@ -982,7 +1043,7 @@ def devicedetail(deviceid):
         # if button == 'Kouder dan'
         if button == 'updaten':
             temp = request.form['temperatuur']
-    return render_template('devicedetail.html', devicedetail=devicedetail)
+    return render_template('devicedetail.html', devicedetail=devicedetail, toestandlight=toestandlight, toestandnolight=toestandnolight, toestandhot=toestandhot)
 
 @app.route('/logs')
 @login_required
