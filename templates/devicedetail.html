@@ -40,10 +40,10 @@
                 <div class="invoer">If the roomtemperature is
 {#                <input class="keuze" type="submit" value="warmer" name="button">or#}
                 <input class="keuze" type="submit" value="warmer" name="button" {% if toestandhot[0] == 1 %} style="background-color: #524a46" {% endif %}> than
-                <input class="input" placeholder="20 °c" name="temperatuur"> then the fan will automatically turn on, otherwise it will turn off itself.
+                20°c then the fan will automatically turn on, otherwise it will turn off itself.
                 </div>
                 <br>
-                <input class="knop" type="submit" value="update fanscene" name="button">
+{#                <input class="knop" type="submit" value="update fanscene" name="button">#}
                 <input class="knop" type="submit" value="turn off fanscene" name="button" {% if toestandhot[0] == 0 %} style="background-color: #524a46" {% endif %}>
 {#                <br>#}
 {#                <input placeholder="naam" name="naam" required><br>#}

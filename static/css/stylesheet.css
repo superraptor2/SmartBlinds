@@ -406,7 +406,7 @@ table tr td {
 	font: normal 14px sans-serif; /*medium*/
 	padding: 45px 80px;
 	margin-top: 80px;
-    position: absolute;
+    position: fixed;
 }
 
 .footer-distributed .footer-left p{

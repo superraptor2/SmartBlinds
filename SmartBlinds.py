@@ -100,8 +100,8 @@ class ThreadingExample(object):
 
                 # Print out results
 
-                #=======================================print("Light: {} ".format(light_level))
-                #=======================================print("Temp : {} deg C".format(int(temp)))
+                print("Light: {} ".format(light_level))
+                print("Temp : {} deg C".format(int(temp)))
                 # licht = light_level
                 # temperatuur = temp
 
@@ -120,6 +120,7 @@ class ThreadingExample(object):
                     if toestandBlindLight[0] == 1:
                         print("Blind moet opengaan als het klaar is")
                         if toestandBlind[0] == 0 and light_level < 800:
+                            openblind("Blind is automatically opening due to light")
                             print("Blind is opening due to light")
                             # # ===Data weschrijven==
                             # datum = datetime.datetime.now()
@@ -166,6 +167,7 @@ class ThreadingExample(object):
                                     time.sleep(0.001)
                             db.updateToestandBlind(1)
                         elif toestandBlind[0] == 1 and light_level > 800:
+                            closeblind("Blind is automatically closing due to no light")
                             # Close blind
                             print("Blind is closing due to no light")
                             import spidev
@@ -206,6 +208,7 @@ class ThreadingExample(object):
                     elif toestandBlindNoLight[0] == 1:
                         print("Blind moet opengaan als het donker is")
                         if toestandBlind[0] == 0 and light_level > 800:
+                            openblind("Blind is automatically opening due to no light")
                             print("Blind is opening due to no light")
                             import spidev
 
@@ -243,6 +246,7 @@ class ThreadingExample(object):
                                     time.sleep(0.001)
                             db.updateToestandBlind(1)
                         elif toestandBlind[0] == 1 and light_level < 800:
+                            openblind("Blind is automatically closing due to no light")
                             print("Blind is closing due to light")
                             # Close blind
                             print("Blind is closing due to no light")
@@ -311,10 +315,12 @@ class ThreadingExample(object):
                     if toestandFanHot[0] == 1:
                         print("Warmer then, fan will start automatically")
                         if toestandFan[0] == 0 and int(temp) > 20:
+                            startautofan("Fan is automatically starting due to warmth")
                             db.updateToestandFan(1)
                             # print("Fan is turning")
 
                         elif toestandFan[0] == 1 and int(temp) < 20:
+                            stopautofan("Fan is automatically stopping due to cold")
                             db.updateToestandFan(0)
                             # print("Fan not turning")
 
@@ -330,7 +336,7 @@ class ThreadingExample(object):
 
                     elif toestandFanCold[0] == 0 and toestandFanHot[0] == 0:
                         print("Fan has to be off")
-                        db.updateToestandFan(0)
+                        db.updateToestandHot(0)
                 # ===TOESTANDFAN=======
                 def toestandFan():
                     db = DbClass()
@@ -376,7 +382,7 @@ class ThreadingExample(object):
             time.sleep(self.interval)
 
 
-def openblind():
+def openblind(reden):
     db = DbClass
     db.updateToestandBlind(1)
     import spidev
@@ -391,6 +397,12 @@ def openblind():
     GPIO.setmode(GPIO.BOARD)
 
     ControlPin = [7, 11, 13, 15]
+
+    datum = datetime.datetime.now()
+    uur = datetime.datetime.now()
+    reden = reden
+    db = DbClass()
+    db.setDataToLog(reden, datum, uur)
 
     for pin in ControlPin:
         GPIO.setup(pin, GPIO.OUT)
@@ -414,7 +426,7 @@ def openblind():
                 GPIO.output(ControlPin[pin], seq[halfstep][pin])
             time.sleep(0.001)
 
-def closeblind():
+def closeblind(reden):
     import spidev
 
     import RPi.GPIO as GPIO
@@ -427,6 +439,12 @@ def closeblind():
     GPIO.setmode(GPIO.BOARD)
 
     ControlPin = [7, 11, 13, 15]
+
+    datum = datetime.datetime.now()
+    uur = datetime.datetime.now()
+    reden = reden
+    db = DbClass()
+    db.setDataToLog(reden, datum, uur)
 
     for pin in ControlPin:
         GPIO.setup(pin, GPIO.OUT)
@@ -488,43 +506,55 @@ def stopfan():
     GPIO.setup(37, GPIO.IN)
     GPIO.cleanup(37)
 
-def startautofan():
-    import RPi.GPIO as GPIO
-    import time
-    GPIO.setwarnings(False)
+def startautofan(reden):
+    # import RPi.GPIO as GPIO
+    # import time
+    # GPIO.setwarnings(False)
+    #
+    # GPIO.setmode(GPIO.BOARD)
+    #
+    # GPIO.setup(37, GPIO.OUT)
+    #
+    # p = GPIO.PWM(37, 0.8)
+    #
+    # p.start(0)
 
-    GPIO.setmode(GPIO.BOARD)
+    datum = datetime.datetime.now()
+    uur = datetime.datetime.now()
+    reden = reden
+    db = DbClass()
+    db.setDataToLog(reden, datum, uur)
 
-    GPIO.setup(37, GPIO.OUT)
+    # try:
+    #     while True:
+    #         print("Fan is turning")
+    #         for i in range(100):
+    #             p.ChangeDutyCycle(i)
+    #             time.sleep(0.02)
+    #         for i in range(100):
+    #             p.ChangeDutyCycle(100 - i)
+    #             time.sleep(0.02)
+    #
+    # except KeyboardInterrupt:
+    #     pass
+    #
+    # p.stop()
+    #
+    # GPIO.cleanup(37)
 
-    p = GPIO.PWM(37, 0.8)
+def stopautofan(reden):
+    datum = datetime.datetime.now()
+    uur = datetime.datetime.now()
+    reden = reden
+    db = DbClass()
+    db.setDataToLog(reden, datum, uur)
 
-    p.start(0)
-
-    try:
-        while True:
-            print("Fan is turning")
-            for i in range(100):
-                p.ChangeDutyCycle(i)
-                time.sleep(0.02)
-            for i in range(100):
-                p.ChangeDutyCycle(100 - i)
-                time.sleep(0.02)
-
-    except KeyboardInterrupt:
-        pass
-
-    p.stop()
-
-    GPIO.cleanup(37)
-
-def stopautofan():
-    import RPi.GPIO as GPIO
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(37, GPIO.OUT)
-    GPIO.output(37, GPIO.LOW)
-    GPIO.setup(37, GPIO.IN)
-    GPIO.cleanup(37)
+    # import RPi.GPIO as GPIO
+    # GPIO.setmode(GPIO.BOARD)
+    # GPIO.setup(37, GPIO.OUT)
+    # GPIO.output(37, GPIO.LOW)
+    # GPIO.setup(37, GPIO.IN)
+    # GPIO.cleanup(37)
 
 # def checklighton():
 #     print('Checking if "light" is selected')
@@ -1030,11 +1060,12 @@ def devicedetail(deviceid):
         if button == "turn off fanscene":
             db.updateToestandHot(0)
             db.updateToestandCold(0)
+            db.updateToestandFan(0)
             return  redirect(url_for('devices'))
 
-        if button == "update fanscene":
-            print("Waarden doorgeven")
-            return redirect(url_for('devices'))
+        # if button == "update fanscene":
+        #     print("Waarden doorgeven")
+        #     return redirect(url_for('devices'))
 
         # if button == 'Warmer dan'
         #
